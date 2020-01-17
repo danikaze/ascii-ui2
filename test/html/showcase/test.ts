@@ -1,5 +1,8 @@
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
+import { initProgressBar, updateProgressBar } from './progress';
+
+let currentTestCase = '';
 
 /**
  * This function:
@@ -28,14 +31,23 @@ export async function loadTest(
     return false;
   }
 
+  const { step } = options;
+  const nSteps = Array.isArray(data) ? data.length : 1;
+  let canvas = document.querySelector('#test canvas');
+
   // select the active element in the index
   setActiveTest(testName);
 
   // set the title
   document.getElementById('test-case-name')!.innerText = testName;
 
-  const { step } = options;
-  let canvas = document.querySelector('#test canvas');
+  // set the progress bar
+  if (currentTestCase === testCase) {
+    updateProgressBar(step || nSteps);
+  } else {
+    initProgressBar(testCase, nSteps, step);
+  }
+  currentTestCase = testCase;
 
   // replace the canvas by a new one to ensure resetting it
   if (!canvas || step === undefined || step <= 0) {

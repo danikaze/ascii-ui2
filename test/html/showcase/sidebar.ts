@@ -3,6 +3,9 @@ import { loadTest } from './test';
 const indexLi: { [name: string]: HTMLLIElement } = {};
 let activeIndexLi: HTMLLIElement;
 
+/**
+ * Makes the sidebar dynamic
+ */
 export function initSidebar() {
   // clicking on files => load test cases
   document
@@ -51,6 +54,9 @@ export function initSidebar() {
     });
 }
 
+/**
+ * Set the specified test as active in the sidebar
+ */
 export function setActiveTest(testName: string): void {
   if (activeIndexLi) {
     activeIndexLi.classList.remove('active');

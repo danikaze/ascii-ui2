@@ -149,7 +149,7 @@
       #main canvas {
         border: 1px solid #428ca5;
         margin: 10px;
-        background-color: #fff;
+        background-color: cyan;
       }
 
       #top-bar {
@@ -163,6 +163,51 @@
         color: white;
         background-color: #5eb0ca;
         border-bottom: 1px solid #428ca5;
+      }
+
+      #progress {
+        display: flex;
+        align-items: center;
+      }
+
+      #progress-bar {
+        display: flex;
+        margin: 10px 0;
+        width: 100%;
+      }
+
+      #previous-step,
+      #next-step {
+        cursor: pointer;
+        margin: 10px;
+        padding: 3px 10px;
+        background: #f9e19f;
+      }
+
+      #previous-step.disabled,
+      #next-step.disabled {
+        user-select: none;
+        cursor: default;
+        color: #98907c;
+        background: #d4c59e;
+      }
+
+      #progress-bar .button {
+        user-select: none;
+        width: 100%;
+        padding: 3px 0;
+        text-align: center;
+        color: #1e2520;
+        background-color: #4f7758;
+        border-right: 1px solid #33563b;
+        cursor: pointer;
+      }
+      #progress-bar .button:last-child {
+        border-right: none;
+      }
+      #progress-bar .button.done {
+        color: #32543a;
+        background-color: #6ad080;
       }
 
       #test-case-name {
@@ -187,6 +232,11 @@
         <div id="git-info">
           <%= htmlWebpackPlugin.options.gitInfo %>
         </div>
+      </div>
+      <div id="progress">
+        <div id="previous-step">Prev</div>
+        <div id="progress-bar"></div>
+        <div id="next-step">Next</div>
       </div>
       <div id="test"></div>
     </div>
