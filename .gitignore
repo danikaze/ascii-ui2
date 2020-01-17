@@ -9,6 +9,7 @@ node_modules
 dist
 coverage
 .nyc_output
+vr-test-static
 
 # =========================
 # Operating System Files
