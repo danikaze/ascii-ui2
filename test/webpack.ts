@@ -2,10 +2,12 @@
  * This file has utility functions related with webpack configuration
  */
 
-import { readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
+import { getVrTestFiles, VR_TEST_FOLDER } from './utils';
 
-const VR_TEST_FOLDER = join(__dirname, '..', 'vr-test');
+export const VR_STATIC_FOLDER = join(__dirname, '..', 'vr-test-static');
+export const VR_STATIC_FILE = 'index.html';
+export const WEBPACK_DEV_SERVER_PORT = 9000;
 
 /**
  * Given an object, transform it so it can be used with DefinePlugin
@@ -39,42 +41,9 @@ export function getChunkFiles(): string[] {
 }
 
 /**
- * Get the full list of vr-test files
- */
-function getVrTestFiles() {
-  function filter(file: string): boolean {
-    return /\.spec\.ts$/.test(file);
-  }
-
-  return getFilesDeep(VR_TEST_FOLDER, filter);
-}
-
-/**
  * Get the chunk name from a file name
  */
 function getChunkName(file: string) {
   const stripFile = file.substring(0, file.length - '.spec.ts'.length);
   return relative(VR_TEST_FOLDER, stripFile);
-}
-
-/**
- * Read all the files in a folder recursively
- * If `filter` is specified, only files matching it will be returned
- */
-function getFilesDeep(
-  folder: string,
-  filter?: (file: string) => boolean,
-  acc: string[] = []
-) {
-  readdirSync(folder).forEach(file => {
-    const filePath = join(folder, file);
-    const stats = statSync(filePath);
-    if (stats.isDirectory()) {
-      getFilesDeep(filePath, filter, acc);
-    } else if (!filter || filter(filePath)) {
-      acc.push(filePath);
-    }
-  });
-
-  return acc;
 }

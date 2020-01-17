@@ -8,10 +8,13 @@ const {
   getDefineValues,
   getEntries,
   getChunkFiles,
+  VR_STATIC_FILE,
+  VR_STATIC_FOLDER,
+  WEBPACK_DEV_SERVER_PORT,
 } = require('./test/webpack');
 
 const gitRevisionPlugin = new GitRevisionPlugin();
-const targetPath = join(__dirname, 'vr-test-static');
+const targetPath = VR_STATIC_FOLDER;
 
 module.exports = env => {
   const isProduction = env && env.prod;
@@ -41,7 +44,7 @@ module.exports = env => {
       stats,
       contentBase: targetPath,
       compress: true,
-      port: 9000,
+      port: WEBPACK_DEV_SERVER_PORT,
     },
 
     resolve: {
@@ -79,7 +82,7 @@ module.exports = env => {
       ),
       new HtmlWebpackPlugin({
         template: join(__dirname, 'test', 'html', 'index.html'),
-        filename: 'index.html',
+        filename: VR_STATIC_FILE,
         ...getTemplateVars(getChunkFiles(), gitRevisionPlugin),
       }),
     ],
