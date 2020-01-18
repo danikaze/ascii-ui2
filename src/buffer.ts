@@ -40,6 +40,7 @@ export class Buffer {
   protected cols: number = 0;
   protected rows: number = 0;
   protected clearStyle: Required<Tile>;
+  protected dirtyTiles: Cell[] = [];
 
   /*
    * State-related vars
@@ -104,7 +105,9 @@ export class Buffer {
       return;
     }
 
-    Object.assign(this.matrix[row][col].tile, tile);
+    const cell = this.matrix[row][col];
+    Object.assign(cell.tile, tile);
+    this.dirtyTiles.push(cell);
   }
 
   /**
@@ -131,22 +134,21 @@ export class Buffer {
     const { ctx, tileW, tileH } = this;
 
     ctx.textBaseline = 'bottom';
-    for (const row of this.matrix) {
-      for (const cell of row) {
-        const { x, y, tile } = cell;
+    for (const cell of this.dirtyTiles) {
+      const { x, y, tile } = cell;
 
-        if (tile.bg) {
-          ctx.fillStyle = tile.bg;
-          ctx.fillRect(x, y, tileW, tileH);
-        }
+      if (tile.bg) {
+        ctx.fillStyle = tile.bg;
+        ctx.fillRect(x, y, tileW, tileH);
+      }
 
-        if (tile.char) {
-          ctx.font = tile.font;
-          ctx.fillStyle = tile.fg;
-          ctx.fillText(tile.char, x + tile.offsetX, y + tileH + tile.offsetY);
-        }
+      if (tile.char) {
+        ctx.font = tile.font;
+        ctx.fillStyle = tile.fg;
+        ctx.fillText(tile.char, x + tile.offsetX, y + tileH + tile.offsetY);
       }
     }
+    this.dirtyTiles = [];
   }
 
   /**
@@ -228,6 +230,11 @@ export class Buffer {
      * Usually all the render calls need to be explicit (not automatically done by the Buffer)
      * but since resizing the canvas will reset its contents completely, this time render is called
      */
+    for (const row of this.matrix) {
+      for (const cell of row) {
+        this.dirtyTiles.push(cell);
+      }
+    }
     this.render();
   }
 
@@ -253,6 +260,7 @@ export class Buffer {
       const row = matrix[y];
       for (let x = xStart; x <= xEnd; x++) {
         Object.assign(row[x].tile, this.clearStyle);
+        this.dirtyTiles.push(row[x]);
       }
     }
   }
