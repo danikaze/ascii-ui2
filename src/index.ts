@@ -1,2 +1,3 @@
-// tslint:disable-next-line: no-console
-console.log('hello');
+export function foobar(): boolean {
+  return true;
+}

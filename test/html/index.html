@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Examples Index</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <style>
+      :root {
+        --transition-props: 150ms ease;
+        --sidebar-width: 250px;
+        --sidebar-button-width: 10px;
+        --top-bar-height: 21px;
+      }
+
+      body {
+        margin: 0;
+        font-family: monospace;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      canvas {
+        margin: 0;
+        padding: 0;
+      }
+
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--sidebar-width);
+        height: 100%;
+        background-color: #cccccc;
+        z-index: 10;
+        overflow-x: hidden;
+        overflow-y: auto;
+        transition: left var(--transition-props);
+      }
+      .sidebar-hidden #sidebar {
+        left: calc(var(--sidebar-button-width) - var(--sidebar-width));
+      }
+
+      #sidebar-controls {
+        display: flex;
+        justify-content: space-around;
+        width: calc(var(--sidebar-width) - 10px - var(--sidebar-button-width));
+        position: sticky;
+        top: 0;
+        height: var(--top-bar-height);
+        margin-bottom: 5px;
+        padding: 5px;
+        background-color: darkgray;
+        border-bottom: 1px solid lightgray;
+      }
+
+      #sidebar-filter {
+        display: inline-block;
+        font-family: monospace;
+      }
+
+      #sidebar-clear-filter {
+        display: inline-block;
+        cursor: pointer;
+      }
+
+      #sidebar-clear-filter::before {
+        content: '⊘';
+      }
+
+      #sidebar-collapse-all {
+        display: inline-block;
+        cursor: pointer;
+      }
+      #sidebar-collapse-all::before {
+        content: '⊖';
+      }
+      #sidebar-collapse-all.closed::before {
+        content: '⊕';
+      }
+
+      #sidebar-index {
+        width: calc(var(--sidebar-width) - var(--sidebar-button-width));
+        padding-left: 10px;
+      }
+      #sidebar-index .folder {
+        margin-bottom: 5px;
+      }
+      #sidebar-index .folder-name {
+        cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 1px;
+      }
+      #sidebar-index .folder-name::before {
+        content: '📂 ';
+      }
+      #sidebar-index .closed > .folder-name::before {
+        content: '📁 ';
+      }
+      #sidebar-index .contents {
+        overflow: hidden;
+        margin: 0;
+        padding-left: 13px;
+        transition: height var(--transition-props);
+      }
+      #sidebar-index .closed > .contents {
+        height: 0;
+      }
+      #sidebar-index .file {
+        cursor: pointer;
+        list-style: none;
+        padding-left: 5px;
+        margin-bottom: 1px;
+      }
+      #sidebar-index .file:hover {
+        color: #ffb40c;
+      }
+      #sidebar-index .file.active {
+        color: #0006c1;
+      }
+      #sidebar-index .file.filtered,
+      #sidebar-index .folder.filtered {
+        display: none;
+      }
+      #sidebar-button {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: var(--sidebar-button-width);
+        height: 100%;
+        background-color: lightslategray;
+      }
+      #main {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding-left: var(--sidebar-width);
+        height: 100%;
+        background-color: lightblue;
+        transition: padding-left var(--transition-props);
+        overflow: auto;
+      }
+      .sidebar-hidden #main {
+        padding-left: var(--sidebar-button-width);
+      }
+
+      #test {
+        display: inline-block;
+        font-size: 0;
+        border: 1px solid #428ca5;
+        margin: 10px;
+        padding: 0;
+        background-color: cyan;
+      }
+
+      #top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        height: var(--top-bar-height);
+        padding: 5px 20px;
+        color: white;
+        background-color: #5eb0ca;
+        border-bottom: 1px solid #428ca5;
+      }
+
+      #progress {
+        display: flex;
+        align-items: center;
+      }
+
+      #progress-bar {
+        display: flex;
+        margin: 10px 0;
+        width: 100%;
+      }
+
+      #previous-step,
+      #next-step {
+        cursor: pointer;
+        margin: 10px;
+        padding: 3px 10px;
+        background: #f9e19f;
+      }
+
+      #previous-step.disabled,
+      #next-step.disabled {
+        user-select: none;
+        cursor: default;
+        color: #98907c;
+        background: #d4c59e;
+      }
+
+      #progress-bar .button {
+        user-select: none;
+        width: 100%;
+        padding: 3px 0;
+        text-align: center;
+        color: #1e2520;
+        background-color: #4f7758;
+        border-right: 1px solid #33563b;
+        cursor: pointer;
+      }
+      #progress-bar .button:last-child {
+        border-right: none;
+      }
+      #progress-bar .button.done {
+        color: #32543a;
+        background-color: #6ad080;
+      }
+
+      #test-case-name {
+        font-size: 120%;
+        font-weight: bold;
+      }
+
+      #description {
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sidebar">
+      <div id="sidebar-controls">
+        <input id="sidebar-filter" />
+        <div id="sidebar-clear-filter"></div>
+        <div id="sidebar-collapse-all"></div>
+      </div>
+      <div id="sidebar-index"><%= htmlWebpackPlugin.options.index %></div>
+      <div id="sidebar-button"></div>
+    </div>
+    <div id="main">
+      <div id="top-bar">
+        <div id="test-case-name"></div>
+        <div id="git-info">
+          <%= htmlWebpackPlugin.options.gitInfo %>
+        </div>
+      </div>
+      <div id="progress">
+        <div id="previous-step">Prev</div>
+        <div id="progress-bar"></div>
+        <div id="next-step">Next</div>
+      </div>
+      <div id="description"></div>
+      <div id="test"></div>
+    </div>
+  </body>
+</html>

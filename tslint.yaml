@@ -380,3 +380,6 @@ rules:
   no-implicit-dependencies:
     - true
     - dev
+    - - '@src'
+      - '@test'
+      - '@vr-test'

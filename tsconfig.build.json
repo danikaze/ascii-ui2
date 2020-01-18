@@ -1,5 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "include": ["src/**/*.ts"],
-  "exclude": ["**/__test/**"]
+  "exclude": ["**/__test/**", "test/**/*.ts", "vr-test/**/*.ts"],
+  "compilerOptions": {
+    "declaration": true
+  }
 }
