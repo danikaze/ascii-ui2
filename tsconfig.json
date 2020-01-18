@@ -13,8 +13,12 @@
     "resolveJsonModule": true,
     "lib": ["dom", "es2017"],
     "paths": {
+      "@src": ["src"],
       "@src/*": ["src/*"],
-      "@test/*": ["test/*"]
+      "@test": ["test"],
+      "@test/*": ["test/*"],
+      "@vr-test": ["vr-test"],
+      "@vr-test/*": ["vr-test/*"]
     },
     "plugins": [
       {

@@ -3,7 +3,7 @@ import { loadTest } from './showcase/test';
 import { initFilter } from './showcase/filter';
 
 export interface LoadTestOptions {
-  step?: number;
+  step?: number | 'all';
 }
 
 export interface TestWindow extends Window {

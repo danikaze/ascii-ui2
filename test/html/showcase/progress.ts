@@ -1,7 +1,7 @@
 import { loadTest } from './test';
 
 let currentTestCase = '';
-let currentStep = 0;
+let currentStep = -1;
 let firstTime = true;
 
 /**
@@ -33,6 +33,7 @@ export function initProgressBar(
   }
 
   currentTestCase = testCase;
+  currentStep = -1;
   updateProgressBar(step !== undefined ? step : nSteps - 1);
 }
 

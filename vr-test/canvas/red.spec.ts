@@ -1,14 +1,17 @@
 import { TestCases } from '..';
 
 export const data: TestCases = [
-  ({ canvas }) => {
-    const ctx = canvas.getContext('2d')!;
+  {
+    description: 'Should render a red square over white background',
+    fn: ({ canvas }) => {
+      const ctx = canvas.getContext('2d')!;
 
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = 'red';
-    // tslint:disable-next-line: no-magic-numbers
-    ctx.fillRect(10, 10, 50, 50);
+      ctx.fillStyle = 'red';
+      // tslint:disable-next-line: no-magic-numbers
+      ctx.fillRect(10, 10, 50, 50);
+    },
   },
 ];

@@ -1,6 +1,7 @@
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
 import { initProgressBar, updateProgressBar } from './progress';
+import { TestCases } from '@vr-test';
 
 let currentTestCase = '';
 
@@ -15,9 +16,9 @@ let currentTestCase = '';
  */
 export async function loadTest(
   testCase: string,
-  options: LoadTestOptions = {}
+  options: LoadTestOptions = { step: 'all' }
 ): Promise<boolean> {
-  let data;
+  let data: TestCases;
   const testName = testCase.replace(/\\/g, '/');
   try {
     const mod = require(`../../../vr-test/${testName}.spec`);
@@ -31,9 +32,9 @@ export async function loadTest(
     return false;
   }
 
-  const { step } = options;
-  const nSteps = Array.isArray(data) ? data.length : 1;
-  let canvas = document.querySelector('#test canvas');
+  const nSteps = data.length;
+  const { step } = options as Required<LoadTestOptions>;
+  let canvas = document.querySelector<HTMLCanvasElement>('#test canvas');
 
   // select the active element in the index
   setActiveTest(testName);
@@ -42,15 +43,13 @@ export async function loadTest(
   document.getElementById('test-case-name')!.innerText = testName;
 
   // set the progress bar
-  if (currentTestCase === testCase) {
-    updateProgressBar(step || nSteps);
-  } else {
-    initProgressBar(testCase, nSteps, step);
+  if (currentTestCase !== testCase) {
+    initProgressBar(testCase, nSteps);
   }
   currentTestCase = testCase;
 
   // replace the canvas by a new one to ensure resetting it
-  if (!canvas || step === undefined || step <= 0) {
+  if (!canvas || step === 'all' || step <= 0 || step >= nSteps) {
     canvas = document.createElement('canvas');
     const container = document.getElementById('test')!;
     container.innerHTML = '';
@@ -60,31 +59,25 @@ export async function loadTest(
   // execute tests
   const testData = { canvas };
 
-  // run only one step
-  if (step !== undefined) {
-    // only one step available
-    if (!Array.isArray(data)) {
-      if (step !== 0) {
-        return false;
-      }
-      await data(testData);
-      return true;
+  // run all steps
+  if (step === 'all') {
+    for (let s = 0; s < data.length; s++) {
+      const test = data[s];
+      document.getElementById('description')!.innerText =
+        test.description || '';
+      updateProgressBar(s);
+      await test.fn(testData);
     }
-    // list of steps available
-    if (step < 0 || step >= data.length) {
-      return false;
-    }
-    await data[step](testData);
     return true;
   }
 
-  // all steps
-  if (!Array.isArray(data)) {
-    await data(testData);
-  } else {
-    for (const fn of data) {
-      await fn(testData);
-    }
+  // run only one step
+  if (step < 0 || step >= data.length) {
+    return false;
   }
+  const test = data[step];
+  document.getElementById('description')!.innerText = test.description || '';
+  updateProgressBar(step);
+  await test.fn(testData);
   return true;
 }
