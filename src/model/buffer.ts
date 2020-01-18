@@ -14,6 +14,13 @@ export interface BufferOptions {
   clearStyle: Tile;
 }
 
+export interface BufferRenderStats {
+  /** Milliseconds the render needed */
+  duration: number;
+  /** Number of tiles rendered */
+  tiles: number;
+}
+
 export interface TileStyle {
   /**
    * font or font-family to use in the terminal

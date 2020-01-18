@@ -1,5 +1,10 @@
 import { extendObjectsOnly } from 'extend-objects-only';
-import { BufferOptions, Tile, Viewport } from './model/buffer';
+import {
+  BufferOptions,
+  Tile,
+  Viewport,
+  BufferRenderStats,
+} from './model/buffer';
 import { isInsideBox } from './util/is-inside-box';
 
 interface Cell {
@@ -35,6 +40,10 @@ export class Buffer {
    */
   protected readonly canvas: HTMLCanvasElement;
   protected readonly ctx: CanvasRenderingContext2D;
+  protected readonly lastRenderStats: BufferRenderStats = {
+    duration: 0,
+    tiles: 0,
+  };
   protected tileW: number;
   protected tileH: number;
   protected cols: number = 0;
@@ -94,6 +103,13 @@ export class Buffer {
   }
 
   /**
+   * Get stats about the last render
+   */
+  get renderStats(): BufferRenderStats {
+    return this.lastRenderStats;
+  }
+
+  /**
    * Set contents and properties of an especified tile
    * If the position is wrong, does nothing
    */
@@ -132,6 +148,7 @@ export class Buffer {
    */
   public render(): void {
     const { ctx, tileW, tileH } = this;
+    const startTime = performance.now();
 
     ctx.textBaseline = 'bottom';
     for (const cell of this.dirtyTiles) {
@@ -148,6 +165,9 @@ export class Buffer {
         ctx.fillText(tile.char, x + tile.offsetX, y + tileH + tile.offsetY);
       }
     }
+
+    this.lastRenderStats.tiles = this.dirtyTiles.length;
+    this.lastRenderStats.duration = performance.now() - startTime;
     this.dirtyTiles = [];
   }
 
