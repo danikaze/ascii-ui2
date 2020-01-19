@@ -19,6 +19,16 @@ interface Cell {
 }
 
 /**
+ * Get the idea of friend classes of C++,
+ * where two linked classes can access private members of each others
+ */
+interface FriendElement {
+  children: FriendElement[];
+  content: Tile[][];
+  absPos: Viewport;
+}
+
+/**
  * Low level interface for controlling the canvas output
  */
 export class Buffer extends NodeCanvas {
@@ -156,9 +166,11 @@ export class Buffer extends NodeCanvas {
    * Render the changes into the canvas
    */
   public render(): void {
-    const { ctx, tileW, tileH } = this;
     this.emit('prerender');
     const startTime = performance.now();
+
+    const { ctx, tileW, tileH } = this;
+    this.renderChildren((this as unknown) as FriendElement);
 
     ctx.textBaseline = 'bottom';
     for (const cell of this.dirtyTiles) {
@@ -177,8 +189,9 @@ export class Buffer extends NodeCanvas {
     }
 
     this.lastRenderStats.tiles = this.dirtyTiles.length;
-    this.lastRenderStats.duration = performance.now() - startTime;
     this.dirtyTiles = [];
+
+    this.lastRenderStats.duration = performance.now() - startTime;
     this.emit('render');
   }
 
@@ -325,6 +338,41 @@ export class Buffer extends NodeCanvas {
     Object.assign(cell.tile, tile);
     if (!this.dirtyTiles.includes(cell)) {
       this.dirtyTiles.push(cell);
+    }
+  }
+
+  /**
+   * Render all the children of the Buffer, recursively
+   *
+   * Uses a nasty? way to access private properties of `Element`, based on the
+   * idea of Friend classes in C++ (or the Java's `default` access modifier)
+   */
+  protected renderChildren(element: FriendElement): void {
+    const viewport = this.viewports[0];
+    const matrix = this.matrix;
+
+    for (const elem of element.children) {
+      const { absPos, content } = elem;
+      const col0 = Math.max(viewport.col0, absPos.col0);
+      const row0 = Math.max(viewport.row0, absPos.row0);
+      const col1 = Math.min(viewport.col1, absPos.col1);
+      const row1 = Math.min(viewport.row1, absPos.row1);
+      const dx = col0 - absPos.col0 - absPos.col0;
+      const dy = row0 - absPos.row0 - absPos.row0;
+      for (let absY = row0; absY <= row1; absY++) {
+        for (let absX = col0; absX <= col1; absX++) {
+          this.assignCellContents(
+            matrix[absY][absX],
+            content[absY + dy][absX + dx]
+          );
+        }
+      }
+
+      if (elem.children.length > 0) {
+        this.pushViewport(elem.absPos);
+        this.renderChildren(elem);
+        this.popViewport();
+      }
     }
   }
 }
