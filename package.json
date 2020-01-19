@@ -15,14 +15,15 @@
     "showcase-static": "ts-node node_modules/webpack/bin/webpack.js --env.static",
     "vr-test": "npm run showcase-static && nyc mocha -r ts-node/register -r tsconfig-paths/register test/index.ts",
     "vr-test-dev": "nyc mocha -r ts-node/register --inspect-brk -r tsconfig-paths/register test/index.ts --debug",
-    "test-all": "nyc mocha -r ts-node/register -r tsconfig-paths/register src/**/__test/**/*.spec.ts test/index.ts"
+    "test-all": "nyc mocha -r ts-node/register -r tsconfig-paths/register src/**/__test/**/*.spec.ts test/index.ts",
+    "prettier": "prettier --write 'src/**/*.{ts,tsx}'"
   },
-  "keywords": [
-    "deep",
-    "extend",
-    "merge",
-    "recursive"
-  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prettier",
+      "pre-push": "npm run test"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/danikaze/ascii-ui2.git"
@@ -35,6 +36,50 @@
   },
   "license": "ISC",
   "private": true,
+  "keywords": [
+    "256 colors",
+    "ansi",
+    "ascii",
+    "borders",
+    "box",
+    "button",
+    "canvas",
+    "color",
+    "console",
+    "curses",
+    "cursor",
+    "event",
+    "focus",
+    "grid",
+    "html",
+    "input field",
+    "input",
+    "manager",
+    "menu",
+    "mouse",
+    "ncurses",
+    "progress bar",
+    "radio",
+    "radiobutton",
+    "render",
+    "screenbuffer",
+    "select",
+    "shell",
+    "style",
+    "table",
+    "term",
+    "termcap",
+    "terminal",
+    "terminfo",
+    "text",
+    "textarea",
+    "textbuffer",
+    "tput",
+    "true color",
+    "ui",
+    "widget",
+    "xterm"
+  ],
   "devDependencies": {
     "@types/chai": "^4.2.7",
     "@types/git-revision-webpack-plugin": "^3.0.0",
@@ -46,6 +91,7 @@
     "chai": "^4.2.0",
     "git-revision-webpack-plugin": "^3.0.4",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^4.0.10",
     "mkdirp": "^0.5.1",
     "mocha": "^7.0.0",
     "nyc": "^15.0.0",
