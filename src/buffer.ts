@@ -1,4 +1,5 @@
 import { extendObjectsOnly } from 'extend-objects-only';
+import { EventEmitter } from './event-emitter';
 import {
   BufferOptions,
   Tile,
@@ -19,7 +20,7 @@ interface Cell {
 /**
  * Low level interface for controlling the canvas output
  */
-export class Buffer {
+export class Buffer extends EventEmitter {
   public static readonly defaultOptions: Omit<BufferOptions, 'canvas'> = {
     tileWidth: 12,
     tileHeight: 16,
@@ -60,6 +61,12 @@ export class Buffer {
   protected readonly viewports: Viewport[] = [];
 
   constructor(options: Partial<BufferOptions> & Pick<BufferOptions, 'canvas'>) {
+    super({
+      canvas: options.canvas,
+      tileWidth: options.tileWidth || Buffer.defaultOptions.tileWidth,
+      tileHeight: options.tileHeight || Buffer.defaultOptions.tileHeight,
+    });
+
     const opt = extendObjectsOnly(
       {},
       Buffer.defaultOptions,
