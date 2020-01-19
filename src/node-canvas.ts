@@ -1,4 +1,4 @@
-import * as EventEmitter3 from 'eventemitter3';
+import { Node } from './node';
 
 export interface BufferMouseEvent {
   button: number;
@@ -17,22 +17,9 @@ export interface BufferKeyEvent {
   ctrlKey: boolean;
   altKey: boolean;
   metaKey: boolean;
-}
-
-export interface Events {
-  click: BufferMouseEvent;
-  mousedown: BufferMouseEvent;
-  mouseenter: BufferMouseEvent;
-  mouseleave: BufferMouseEvent;
-  mousemove: BufferMouseEvent;
-  mouseout: BufferMouseEvent;
-  mouseover: BufferMouseEvent;
-  mouseup: BufferMouseEvent;
-  keydown: BufferKeyEvent;
-  keyup: BufferKeyEvent;
-  keypress: BufferKeyEvent;
-  focus: never;
-  blur: never;
+  key: string;
+  code: string;
+  keyCode: number;
 }
 
 export interface EventEmitterRootOptions {
@@ -53,10 +40,13 @@ type MouseEventTypes =
 type KeyEventTypes = 'keydown' | 'keyup' | 'keypress';
 type NoDataEventTypes = 'focus' | 'blur';
 
-export class EventEmitter extends EventEmitter3<keyof Events> {
-  constructor(options?: EventEmitterRootOptions) {
+/**
+ * Special type of Node that handles the events of the top level,
+ * catching key, mouse... type of events directly from the canvas
+ */
+export class NodeCanvas extends Node {
+  constructor(options: EventEmitterRootOptions) {
     super();
-    if (!options) return;
 
     const { canvas, tileWidth, tileHeight } = options;
     const handleMouseEvent = this.handleMouseEvent.bind(
@@ -118,7 +108,7 @@ export class EventEmitter extends EventEmitter3<keyof Events> {
     type: MouseEventTypes,
     event: MouseEvent
   ): void {
-    this.emit(type, {
+    const param = {
       button: event.button,
       x: event.offsetX,
       y: event.offsetY,
@@ -128,19 +118,24 @@ export class EventEmitter extends EventEmitter3<keyof Events> {
       ctrlKey: event.ctrlKey,
       altKey: event.altKey,
       metaKey: event.metaKey,
-    });
+    };
+    this.emit(type, param);
   }
 
   /**
    * Emit key events
    */
   protected handleKeys(type: KeyEventTypes, event: KeyboardEvent): void {
-    this.emit(type, {
+    const param = {
       shiftKey: event.shiftKey,
       ctrlKey: event.ctrlKey,
       altKey: event.altKey,
       metaKey: event.metaKey,
-    });
+      key: event.key,
+      code: event.code,
+      keyCode: event.keyCode,
+    };
+    this.emit(type, param);
   }
 
   /**

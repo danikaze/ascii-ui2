@@ -1,5 +1,5 @@
 import { extendObjectsOnly } from 'extend-objects-only';
-import { EventEmitter } from './event-emitter';
+import { NodeCanvas } from './node-canvas';
 import {
   BufferOptions,
   Tile,
@@ -20,7 +20,7 @@ interface Cell {
 /**
  * Low level interface for controlling the canvas output
  */
-export class Buffer extends EventEmitter {
+export class Buffer extends NodeCanvas {
   public static readonly defaultOptions: Omit<BufferOptions, 'canvas'> = {
     tileWidth: 12,
     tileHeight: 16,

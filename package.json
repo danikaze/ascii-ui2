@@ -117,7 +117,6 @@
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
-    "eventemitter3": "^4.0.0",
     "extend-objects-only": "^1.0.1"
   }
 }
