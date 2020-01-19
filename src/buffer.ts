@@ -155,6 +155,7 @@ export class Buffer extends NodeCanvas {
    */
   public render(): void {
     const { ctx, tileW, tileH } = this;
+    this.emit('prerender');
     const startTime = performance.now();
 
     ctx.textBaseline = 'bottom';
@@ -176,6 +177,7 @@ export class Buffer extends NodeCanvas {
     this.lastRenderStats.tiles = this.dirtyTiles.length;
     this.lastRenderStats.duration = performance.now() - startTime;
     this.dirtyTiles = [];
+    this.emit('render');
   }
 
   /**
@@ -263,6 +265,7 @@ export class Buffer extends NodeCanvas {
       }
     }
     this.render();
+    this.emit('resize', { cols, rows });
   }
 
   /**
