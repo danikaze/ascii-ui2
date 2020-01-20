@@ -53,7 +53,9 @@ before('set up the browser', async () => {
       timeout: 1000,
     });
   } catch (e) {
-    await page.goto(`${VR_STATIC_FOLDER}/${VR_STATIC_FILE}`, { timeout: 1000 });
+    await page.goto(`file://${VR_STATIC_FOLDER}/${VR_STATIC_FILE}`, {
+      timeout: 1000,
+    });
   }
 });
 
