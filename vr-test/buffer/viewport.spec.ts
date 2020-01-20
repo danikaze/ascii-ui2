@@ -1,8 +1,20 @@
 import { Buffer } from '@src/buffer';
-import { Tile } from '@src/model/buffer';
+import { Tile, Viewport } from '@src/model/buffer';
 import { TestCases } from '@test';
 
 let buffer: Buffer;
+const intersection1: Viewport = {
+  col0: 1,
+  row0: 1,
+  col1: 5,
+  row1: 5,
+};
+const intersection2: Viewport = {
+  col0: 4,
+  row0: 4,
+  col1: 8,
+  row1: 8,
+};
 
 // tslint:disable: no-magic-numbers
 function resetBuffer(canvas: HTMLCanvasElement): void {
@@ -81,6 +93,48 @@ export const data: TestCases = [
         row1: buffer.height - 3,
       });
       writeAllBuffer(buffer, { fg: 'red' });
+    },
+  },
+  {
+    description: `A single viewport...`,
+    test: ({ canvas }) => {
+      resetBuffer(canvas);
+      buffer.pushViewport(intersection1);
+      writeAllBuffer(buffer, { fg: 'red' });
+      buffer.popViewport();
+    },
+  },
+  {
+    description: `Another single viewport...`,
+    test: () => {
+      buffer.pushViewport(intersection2);
+      writeAllBuffer(buffer, { fg: 'green' });
+      buffer.popViewport();
+    },
+  },
+  {
+    description: `When applied both, only the intersection should be editable`,
+    test: () => {
+      buffer.pushViewport(intersection1);
+      buffer.pushViewport(intersection2);
+      writeAllBuffer(buffer, { fg: 'yellow' });
+    },
+  },
+  {
+    description: `Removing only the last viewport should leave the previous one`,
+    test: () => {
+      buffer.popViewport();
+      writeAllBuffer(buffer, { fg: 'pink' });
+    },
+  },
+  {
+    description: `Removing all viewports should be all the buffer editable`,
+    test: () => {
+      let v = buffer.popViewport();
+      while (v) {
+        v = buffer.popViewport();
+      }
+      writeAllBuffer(buffer, { fg: 'white' });
     },
   },
 ];

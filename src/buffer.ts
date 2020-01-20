@@ -182,13 +182,24 @@ export class Buffer extends NodeCanvas {
   }
 
   /**
-   * Pushes a new viewport restriction
+   * Pushes a new viewport restriction. It combines with the existing one if any,
+   * resulting in the intersecting area of all the applied ones.
    *
    * Viewport coordinates are inclusive (limits are considered valid)
    * If a tile is not in the viewport restrictions, it won't be modified
    */
   public pushViewport(viewport: Viewport): void {
-    this.viewports.unshift({ ...viewport });
+    const currentViewport = this.viewports[0];
+    if (!currentViewport) {
+      this.viewports.push({ ...viewport });
+    } else {
+      this.viewports.unshift({
+        col0: Math.max(currentViewport.col0, viewport.col0),
+        row0: Math.max(currentViewport.row0, viewport.row0),
+        col1: Math.min(currentViewport.col1, currentViewport.col1),
+        row1: Math.min(currentViewport.row1, currentViewport.row1),
+      });
+    }
   }
 
   /**
