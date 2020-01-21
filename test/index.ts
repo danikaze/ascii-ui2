@@ -63,7 +63,9 @@ after('clean the browser', async () => {
   await browser.close();
 });
 
-describe('Visual Regresion Tests', async () => {
+describe('Visual Regresion Tests', async function() {
+  this.timeout(0);
+
   getVrTestFiles().forEach(file => {
     const relativePath = relative(VR_TEST_FOLDER, file);
 
