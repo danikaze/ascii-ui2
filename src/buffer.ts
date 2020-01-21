@@ -129,9 +129,7 @@ export class Buffer extends NodeCanvas {
       return;
     }
 
-    const cell = this.matrix[row][col];
-    Object.assign(cell.tile, tile);
-    this.dirtyTiles.push(cell);
+    this.assignCellContents(this.matrix[row][col], tile);
   }
 
   /**
@@ -303,5 +301,36 @@ export class Buffer extends NodeCanvas {
         viewport.row1
       )
     );
+  }
+
+  /**
+   * Assign new contents for a valid cell, after doing checks to improve performance:
+   * - Only do it when changing
+   * - Avoiding duplicated dirty tile
+   */
+  protected assignCellContents(cell: Cell, tile: Tile): void {
+    let change = false;
+    const oldTile = cell.tile;
+    // comparison done manually because if done with Object.keys + loop is
+    // slower than not applying the performance improvement
+    // and still, for small renders (98 before the check => 56 after the check)
+    // it doesn't become a huge improvement
+    // TODO: Test with bigger/real data
+    if (
+      (tile.char !== undefined && tile.char !== oldTile.char) ||
+      (tile.font !== undefined && tile.font !== oldTile.font) ||
+      (tile.offsetX !== undefined && tile.offsetX !== oldTile.offsetX) ||
+      (tile.offsetY !== undefined && tile.offsetY !== oldTile.offsetY) ||
+      (tile.fg !== undefined && tile.fg !== oldTile.fg) ||
+      (tile.bg !== undefined && tile.bg !== oldTile.bg)
+    ) {
+      change = true;
+    }
+    if (!change) return;
+
+    Object.assign(cell.tile, tile);
+    if (!this.dirtyTiles.includes(cell)) {
+      this.dirtyTiles.push(cell);
+    }
   }
 }
