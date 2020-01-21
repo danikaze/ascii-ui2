@@ -79,6 +79,12 @@ export class Buffer extends NodeCanvas {
     this.tileW = opt.tileWidth;
     this.tileH = opt.tileHeight;
     this.clearStyle = opt.clearStyle as Required<Tile>;
+    this.viewports.push({
+      col0: 0,
+      row0: 0,
+      col1: 0,
+      row1: 0,
+    });
     this.resize(opt.cols, opt.rows);
   }
 
@@ -122,10 +128,7 @@ export class Buffer extends NodeCanvas {
    * If the position is wrong, does nothing
    */
   public setTile(col: number, row: number, tile: Partial<Tile>): void {
-    if (
-      !this.isValidTilePosition(col, row) ||
-      !this.inCurrentViewport(col, row)
-    ) {
+    if (!this.inCurrentViewport(col, row)) {
       return;
     }
 
@@ -188,16 +191,12 @@ export class Buffer extends NodeCanvas {
    */
   public pushViewport(viewport: Viewport): void {
     const currentViewport = this.viewports[0];
-    if (!currentViewport) {
-      this.viewports.push({ ...viewport });
-    } else {
-      this.viewports.unshift({
-        col0: Math.max(currentViewport.col0, viewport.col0),
-        row0: Math.max(currentViewport.row0, viewport.row0),
-        col1: Math.min(currentViewport.col1, currentViewport.col1),
-        row1: Math.min(currentViewport.row1, currentViewport.row1),
-      });
-    }
+    this.viewports.unshift({
+      col0: Math.max(currentViewport.col0, viewport.col0),
+      row0: Math.max(currentViewport.row0, viewport.row0),
+      col1: Math.min(currentViewport.col1, viewport.col1),
+      row1: Math.min(currentViewport.row1, viewport.row1),
+    });
   }
 
   /**
@@ -206,6 +205,7 @@ export class Buffer extends NodeCanvas {
    * Not having any restriction means that all the tiles are editable (by default)
    */
   public popViewport(): Viewport | undefined {
+    if (this.viewports.length === 1) return;
     return this.viewports.shift();
   }
 
@@ -225,6 +225,7 @@ export class Buffer extends NodeCanvas {
    */
   public resize(cols: number, rows: number): void {
     const { canvas, clearStyle, tileW, tileH } = this;
+    const screenViewport = this.viewports[this.viewports.length - 1];
 
     canvas.width = cols * tileW;
     canvas.height = rows * tileH;
@@ -237,6 +238,9 @@ export class Buffer extends NodeCanvas {
 
     this.cols = cols;
     this.rows = rows;
+    screenViewport.col1 = cols - 1;
+    screenViewport.row1 = rows - 1;
+
     /*
      * Usually all the render calls need to be explicit (not automatically done by the Buffer)
      * but since resizing the canvas will reset its contents completely, this time render is called
@@ -278,28 +282,18 @@ export class Buffer extends NodeCanvas {
   }
 
   /**
-   * Check if the specified tile position is inside the matrix
-   */
-  protected isValidTilePosition(col: number, row: number): boolean {
-    return isInsideBox(col, row, 0, 0, this.cols - 1, this.rows - 1);
-  }
-
-  /**
    * Check if the specified tile position is inside of the viewport restrictions
    */
   protected inCurrentViewport(col: number, row: number): boolean {
     const viewport = this.viewports[0];
 
-    return (
-      !viewport ||
-      isInsideBox(
-        col,
-        row,
-        viewport.col0,
-        viewport.row0,
-        viewport.col1,
-        viewport.row1
-      )
+    return isInsideBox(
+      col,
+      row,
+      viewport.col0,
+      viewport.row0,
+      viewport.col1,
+      viewport.row1
     );
   }
 
