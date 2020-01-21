@@ -7,6 +7,7 @@ import {
   BufferRenderStats,
 } from './model/buffer';
 import { isInsideBox } from './util/is-inside-box';
+import { resizeMatrix } from './util/resize-matrix';
 
 interface Cell {
   /** Horizontal coordinates relative to the canvas in pixels */
@@ -214,44 +215,16 @@ export class Buffer extends NodeCanvas {
    * It also resizes the linked canvas element
    */
   public resize(cols: number, rows: number): void {
-    const { canvas, clearStyle, tileW, tileH, matrix } = this;
+    const { canvas, clearStyle, tileW, tileH } = this;
 
     canvas.width = cols * tileW;
     canvas.height = rows * tileH;
 
-    // resize vertical
-    if (rows < this.rows) {
-      matrix.splice(rows);
-    } else if (rows > this.rows) {
-      for (let y = this.rows; y < rows; y++) {
-        const row = (matrix[y] = [] as Cell[]);
-        for (let x = 0; x < cols; x++) {
-          row[x] = {
-            x: x * tileW,
-            y: y * tileH,
-            tile: { ...clearStyle },
-          };
-        }
-      }
-    }
-
-    // resize horizontal
-    if (cols < this.cols) {
-      for (const row of matrix) {
-        row.splice(cols);
-      }
-    } else if (cols > this.cols) {
-      for (let y = 0; y < rows; y++) {
-        const row = matrix[y];
-        for (let x = this.cols; x < cols; x++) {
-          row[x] = {
-            x: x * tileW,
-            y: y * tileH,
-            tile: { ...clearStyle },
-          };
-        }
-      }
-    }
+    resizeMatrix(this.matrix, cols, rows, (x, y) => ({
+      x: x * tileW,
+      y: y * tileH,
+      tile: { ...clearStyle },
+    }));
 
     this.cols = cols;
     this.rows = rows;
