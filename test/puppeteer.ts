@@ -7,7 +7,7 @@ import { sync as mkdirp } from 'mkdirp';
 import { compareImgs } from './compare-imgs';
 import { TestWindow } from './html';
 import { VR_TEST_FOLDER } from './utils';
-import { TestCases } from '@test';
+import { TestCases, PuppeteerTestData } from '@test';
 
 export interface VrTestOptions {
   testCase: string;
@@ -47,9 +47,15 @@ export async function runVrTest({
 
   let allOk = true;
 
-  const puppeteerTestData = {
+  const puppeteerTestData: PuppeteerTestData = {
     page,
     canvasHandler: await getPageCanvasHandler(page),
+    getBounds: async elem => {
+      const data = await elem.evaluate(elem => {
+        return JSON.stringify(elem.getBoundingClientRect());
+      });
+      return JSON.parse(data);
+    },
   };
 
   // execute all the test steps of the test case

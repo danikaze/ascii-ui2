@@ -12,9 +12,21 @@ import {
 const DEBUG_MODE = process.argv.includes('--debug');
 const PRESERVE_IMAGES = DEBUG_MODE || process.argv.includes('--noRm');
 
+export interface DOMRectLike {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  top: number;
+  bottom: number;
+  left: number;
+}
+
 export interface PuppeteerTestData {
   page: puppeteer.Page;
   canvasHandler: puppeteer.JSHandle<HTMLCanvasElement>;
+  // need to provide custom implementation because puppeteer's returns null
+  getBounds: (elem: puppeteer.JSHandle) => Promise<DOMRectLike>;
 }
 export interface BrowserTestData {
   canvas: HTMLCanvasElement;
