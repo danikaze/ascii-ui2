@@ -9,13 +9,13 @@
     "clean": "rimraf dist",
     "test": "npm run lint && npm run showcase-static && npm run test-all",
     "lint": "tslint -p tsconfig.json -c tslint.yaml",
-    "unit-test": "nyc mocha -r ts-node/register -r tsconfig-paths/register src/**/__test/**/*.spec.ts",
-    "unit-test-dev": "nyc mocha -r ts-node/register --inspect-brk -r tsconfig-paths/register src/**/__test/**/*.spec.ts",
+    "unit-test": "scripts/test.sh --ut",
+    "unit-test-dev": "scripts/test.sh --ut --debug",
     "showcase": "ts-node node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "showcase-static": "ts-node node_modules/webpack/bin/webpack.js --env.static",
-    "vr-test": "npm run showcase-static && nyc mocha -r ts-node/register -r tsconfig-paths/register --timeout 5000 test/index.ts",
-    "vr-test-dev": "nyc mocha -r ts-node/register --inspect-brk -r tsconfig-paths/register test/index.ts --debug",
-    "test-all": "nyc mocha -r ts-node/register -r tsconfig-paths/register --timeout 5000 src/**/__test/**/*.spec.ts test/index.ts",
+    "vr-test": "npm run showcase-static && scripts/test.sh --vr",
+    "vr-test-dev": "scripts/test.sh --vr --debug",
+    "test-all": "scripts/test.sh --all",
     "prettier": "prettier --write 'src/**/*.{ts,tsx}'"
   },
   "husky": {

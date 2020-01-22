@@ -73,6 +73,20 @@ function getImageFilename(
   );
 }
 
+/**
+ * Return a list of the test files to execute,
+ * depending on the parameters used to start the test process
+ */
+function getTestFiles(): string[] {
+  const argvFiles = process.argv.filter(
+    arg => arg.endsWith('.spec.ts') && arg.includes('vr-test')
+  );
+  if (argvFiles.length === 0) {
+    return getVrTestFiles();
+  }
+  return argvFiles;
+}
+
 before('set up the browser', async () => {
   const browserOptions: puppeteer.LaunchOptions = {
     devtools: DEBUG_MODE,
@@ -101,7 +115,7 @@ after('clean the browser', async () => {
 describe('Visual Regresion Tests', async function() {
   this.timeout(0);
 
-  getVrTestFiles().forEach(file => {
+  getTestFiles().forEach(file => {
     const relativePath = relative(VR_TEST_FOLDER, file);
     const steps = require(file).data as TestCases;
 
