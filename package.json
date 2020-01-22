@@ -13,9 +13,9 @@
     "unit-test-dev": "nyc mocha -r ts-node/register --inspect-brk -r tsconfig-paths/register src/**/__test/**/*.spec.ts",
     "showcase": "ts-node node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "showcase-static": "ts-node node_modules/webpack/bin/webpack.js --env.static",
-    "vr-test": "npm run showcase-static && nyc mocha -r ts-node/register -r tsconfig-paths/register test/index.ts",
+    "vr-test": "npm run showcase-static && nyc mocha -r ts-node/register -r tsconfig-paths/register --timeout 5000 test/index.ts",
     "vr-test-dev": "nyc mocha -r ts-node/register --inspect-brk -r tsconfig-paths/register test/index.ts --debug",
-    "test-all": "nyc mocha -r ts-node/register -r tsconfig-paths/register src/**/__test/**/*.spec.ts test/index.ts",
+    "test-all": "nyc mocha -r ts-node/register -r tsconfig-paths/register --timeout 5000 src/**/__test/**/*.spec.ts test/index.ts",
     "prettier": "prettier --write 'src/**/*.{ts,tsx}'"
   },
   "husky": {
