@@ -12,6 +12,16 @@ import {
 const DEBUG_MODE = process.argv.includes('--debug');
 const PRESERVE_IMAGES = DEBUG_MODE || process.argv.includes('--noRm');
 
+export interface TestData {
+  canvas: HTMLCanvasElement;
+}
+export type TestDescription = {
+  description?: string;
+  fn: TestFunction;
+};
+export type TestFunction = (data: TestData) => void | Promise<void>;
+export type TestCases = TestDescription[];
+
 export interface TestPageInfo {
   page: puppeteer.Page;
   canvasHandle: puppeteer.JSHandle<HTMLCanvasElement>;

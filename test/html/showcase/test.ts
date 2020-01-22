@@ -1,7 +1,7 @@
+import { TestCases } from '../../';
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
 import { initProgressBar, updateProgressBar } from './progress';
-import { TestCases } from '@vr-test';
 
 let currentTestCase = '';
 

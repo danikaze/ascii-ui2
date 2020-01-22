@@ -1,4 +1,4 @@
-import { TestCases } from '..';
+import { TestCases } from '@test';
 
 export const data: TestCases = [
   {
