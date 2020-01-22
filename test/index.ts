@@ -67,15 +67,19 @@ before('set up the browser', async () => {
   };
   browser = await puppeteer.launch(browserOptions);
   page = (await browser.pages())[0];
+  let testUrl = `http://localhost:${WEBPACK_DEV_SERVER_PORT}/`;
   try {
-    await page.goto(`http://localhost:${WEBPACK_DEV_SERVER_PORT}/`, {
+    await page.goto(testUrl, {
       timeout: 1000,
     });
   } catch (e) {
-    await page.goto(`file://${VR_STATIC_FOLDER}/${VR_STATIC_FILE}`, {
+    testUrl = `file://${VR_STATIC_FOLDER}/${VR_STATIC_FILE}`;
+    await page.goto(testUrl, {
       timeout: 1000,
     });
   }
+  // tslint:disable-next-line: no-console
+  console.log(`Running Visual Regression tests from ${testUrl}\n`);
 });
 
 after('clean the browser', async () => {
