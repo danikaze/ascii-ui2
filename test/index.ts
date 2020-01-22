@@ -31,17 +31,19 @@ export interface PuppeteerTestData {
 export interface BrowserTestData {
   canvas: HTMLCanvasElement;
 }
-export type TestDescription = {
+export type TestDescription<R extends {} = {}> = {
   description?: string;
   beforeTest?: PuppeteerTestFunction;
   test: BrowserTestFunction;
-  afterTest?: PuppeteerTestFunction;
+  afterTest?: PuppeteerTestFunction<R>;
 };
-export type PuppeteerTestFunction = (data: PuppeteerTestData) => Promise<void>;
-export type BrowserTestFunction = (
+export type PuppeteerTestFunction<R extends {} = {}> = (
+  data: PuppeteerTestData & R
+) => Promise<void>;
+export type BrowserTestFunction = <R extends {} = {}>(
   data: BrowserTestData
-) => void | Promise<void>;
-export type TestCases = TestDescription[];
+) => R | void | Promise<R | void>;
+export type TestCases<R extends {} = {}> = TestDescription<{} & R>[];
 
 export interface TestPageInfo {
   page: puppeteer.Page;

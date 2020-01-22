@@ -14,10 +14,10 @@ let currentTestCase = '';
  * Returns `false` if the specified step didn't exist, `true` if it was executed.
  * Even if the step doesn't exist, it will prepare the page
  */
-export async function loadTest(
+export async function loadTest<R extends {}>(
   testCase: string,
   options: LoadTestOptions = { step: 'all' }
-): Promise<boolean> {
+): Promise<R | void> {
   /*
    * 1. test loading
    */
@@ -32,7 +32,7 @@ export async function loadTest(
   } catch (e) {
     // tslint:disable-next-line: no-console
     console.warn(`data not found for test "${testName}"`);
-    return false;
+    return;
   }
 
   /*
@@ -70,28 +70,28 @@ export async function loadTest(
 
   // run all steps
   if (step === 'all') {
+    let returnData: R | void = undefined;
     for (let s = 0; s < data.length; s++) {
-      await executeStep(data, s, testData);
+      returnData = await executeStep(data, s, testData);
     }
-    return true;
+    return returnData;
   }
 
   // run only one step
   if (step < 0 || step >= data.length) {
-    return false;
+    return;
   }
-  await executeStep(data, step, testData);
-  return true;
+  return await executeStep(data, step, testData);
 }
 
 /**
  * Execute only one step of a specific test case
  */
-async function executeStep(
+async function executeStep<R>(
   tests: TestCases,
   step: number,
   data: BrowserTestData
-) {
+): Promise<R | void> {
   const testCase = tests[step];
   const errorsElem = document.getElementById('errors')!;
   document.getElementById('description')!.innerText =
@@ -100,7 +100,7 @@ async function executeStep(
 
   try {
     errorsElem.style.display = 'none';
-    await testCase.test(data);
+    return (await testCase.test(data)) as R;
   } catch (error) {
     setError(step);
     errorsElem.style.display = '';
