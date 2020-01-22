@@ -1,4 +1,4 @@
-import { TestCases, TestData } from '../../';
+import { TestCases, BrowserTestData } from '../../';
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
 import { initProgressBar, updateProgressBar, setError } from './progress';
@@ -18,6 +18,9 @@ export async function loadTest(
   testCase: string,
   options: LoadTestOptions = { step: 'all' }
 ): Promise<boolean> {
+  /*
+   * 1. test loading
+   */
   let data: TestCases;
   const testName = testCase.replace(/\\/g, '/');
   try {
@@ -32,9 +35,12 @@ export async function loadTest(
     return false;
   }
 
+  /*
+   * 2. test preparation
+   */
   const nSteps = data.length;
   const { step } = options as Required<LoadTestOptions>;
-  let canvas = document.querySelector<HTMLCanvasElement>('#test canvas');
+  let canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
 
   // select the active element in the index
   setActiveTest(testName);
@@ -48,15 +54,18 @@ export async function loadTest(
   }
   currentTestCase = testCase;
 
-  // replace the canvas by a new one to ensure resetting it
-  if (!canvas || step === 'all' || step <= 0 || step >= nSteps) {
-    canvas = document.createElement('canvas');
-    const container = document.getElementById('test')!;
-    container.innerHTML = '';
-    container.append(canvas);
+  // resizing the canvas will reset it
+  if (step === 'all' || step <= 0 || step >= nSteps) {
+    canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
+    // create a new canvas just to get the default size ^^;
+    const temp = document.createElement('canvas');
+    canvas.width = temp.width;
+    canvas.height = temp.height;
   }
 
-  // execute tests
+  /*
+   * 3. test execution
+   */
   const testData = { canvas };
 
   // run all steps
@@ -75,7 +84,14 @@ export async function loadTest(
   return true;
 }
 
-async function executeStep(tests: TestCases, step: number, data: TestData) {
+/**
+ * Execute only one step of a specific test case
+ */
+async function executeStep(
+  tests: TestCases,
+  step: number,
+  data: BrowserTestData
+) {
   const testCase = tests[step];
   const errorsElem = document.getElementById('errors')!;
   document.getElementById('description')!.innerText =
@@ -84,7 +100,7 @@ async function executeStep(tests: TestCases, step: number, data: TestData) {
 
   try {
     errorsElem.style.display = 'none';
-    await testCase.fn(data);
+    await testCase.test(data);
   } catch (error) {
     setError(step);
     errorsElem.style.display = '';

@@ -12,14 +12,23 @@ import {
 const DEBUG_MODE = process.argv.includes('--debug');
 const PRESERVE_IMAGES = DEBUG_MODE || process.argv.includes('--noRm');
 
-export interface TestData {
+export interface PuppeteerTestData {
+  page: puppeteer.Page;
+  canvasHandler: puppeteer.JSHandle<HTMLCanvasElement>;
+}
+export interface BrowserTestData {
   canvas: HTMLCanvasElement;
 }
 export type TestDescription = {
   description?: string;
-  fn: TestFunction;
+  beforeTest?: PuppeteerTestFunction;
+  test: BrowserTestFunction;
+  afterTest?: PuppeteerTestFunction;
 };
-export type TestFunction = (data: TestData) => void | Promise<void>;
+export type PuppeteerTestFunction = (data: PuppeteerTestData) => Promise<void>;
+export type BrowserTestFunction = (
+  data: BrowserTestData
+) => void | Promise<void>;
 export type TestCases = TestDescription[];
 
 export interface TestPageInfo {
@@ -78,10 +87,12 @@ describe('Visual Regresion Tests', async function() {
 
   getVrTestFiles().forEach(file => {
     const relativePath = relative(VR_TEST_FOLDER, file);
+    const steps = require(file).data as TestCases;
 
     it(relativePath, async () => {
       await runVrTest({
         page,
+        steps,
         testCase: relativePath.replace(/\.spec\.ts$/g, ''),
         getImageFilename: getImageFilename.bind(null, file),
         preserveImages: PRESERVE_IMAGES,
