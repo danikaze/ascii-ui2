@@ -25,23 +25,6 @@ export const data: TestCases = [
       buffer.setTile(x++, y, { char: 'l' });
       buffer.setTile(x++, y, { char: 'd' });
       buffer.setTile(x++, y, { char: '!' });
-
-      // tslint:disable: no-console
-      // TODO: Add a way to test this properly with puppeteer
-      buffer.on('keydown', e => console.log('keydown', e));
-      buffer.on('click', e => console.log('click', e));
-      buffer.on('mousedown', e => console.log('mousedown', e));
-      buffer.on('mouseenter', e => console.log('mouseenter', e));
-      buffer.on('mouseleave', e => console.log('mouseleave', e));
-      buffer.on('mousemove', e => console.log('mousemove', e));
-      buffer.on('mouseout', e => console.log('mouseout', e));
-      buffer.on('mouseover', e => console.log('mouseover', e));
-      buffer.on('mouseup', e => console.log('mouseup', e));
-      buffer.on('keydown', e => console.log('keydown', e));
-      buffer.on('keyup', e => console.log('keyup', e));
-      buffer.on('keypress', e => console.log('keypress', e));
-      buffer.on('focus', () => console.log('focus'));
-      buffer.on('blur', () => console.log('blur'));
     },
   },
   {
