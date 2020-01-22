@@ -30,6 +30,9 @@ module.exports = env => {
   return {
     mode: isProduction ? 'production' : 'development',
     watch: !isStatic,
+    watchOptions: {
+      ignored: ['**/__expected/**/*', '**/__exec/**/*'],
+    },
     devtool: isProduction ? undefined : 'source-map',
 
     entry: getEntries(),

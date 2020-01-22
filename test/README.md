@@ -27,8 +27,6 @@ npm run vr-test
 
 This tests are executed from [index.ts](./index.ts), which set [puppeteer](https://github.com/puppeteer/puppeteer) and the mocha environment up, and test against the running showcase server or the static generated one if the server is not running.
 
-> Note: Currently running `vr-test` against the _showcase server_ (via `npm run showcase`) will conflict some times with folder permissions, since the webpack `watch` mode is reloading every time a new screenshot is generated -specially in Windows- (but it shouldn't), so it's better to stop the server and run the tests agains the static version
-
 This being said, puppeteer will not run directly the client-side tests, but call a global function prepared by the showcase, which will load and execute the test. Explained better in this steps:
 
 1. Load the showcase page via puppeteer
