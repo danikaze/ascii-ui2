@@ -14,6 +14,8 @@ export const data: TestCases = [
       ctx.fillStyle = 'blue';
       // tslint:disable-next-line: no-magic-numbers
       ctx.fillRect(80, 80, 50, 50);
+      // tslint:disable-next-line: no-any
+      (window as any).abc[0] = 'foobar';
     },
   },
 ];

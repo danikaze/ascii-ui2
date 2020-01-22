@@ -29,6 +29,10 @@
         padding: 0;
         outline: none;
       }
+      pre {
+        margin: 0;
+        padding: 0;
+      }
 
       #sidebar {
         position: fixed;
@@ -210,12 +214,22 @@
         border-right: 1px solid #33563b;
         cursor: pointer;
       }
-      #progress-bar .button:last-child {
+      #progress-bar .button.error {
+        color: #ff9e9e;
+        background-color: #840000;
+        border-right: 1px solid #750000;
+      }
+      #progress-bar .button:last-child,
+      #progress-bar .button.error:last-child {
         border-right: none;
       }
       #progress-bar .button.done {
         color: #32543a;
         background-color: #6ad080;
+      }
+      #progress-bar .button.done.error {
+        color: white;
+        background-color: #cc0000;
       }
 
       #test-case-name {
@@ -225,6 +239,17 @@
 
       #description {
         margin: 10px;
+      }
+
+      #errors {
+        margin: 10px;
+        background: #fafafa;
+        color: #d00000;
+        padding: 2px;
+      }
+      #errors pre {
+        padding: 10px;
+        border: 1px solid #d00000;
       }
     </style>
   </head>
@@ -252,6 +277,7 @@
       </div>
       <div id="description"></div>
       <div id="test"></div>
+      <div id="errors"></div>
     </div>
   </body>
 </html>

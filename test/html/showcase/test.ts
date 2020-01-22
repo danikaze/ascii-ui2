@@ -1,7 +1,7 @@
-import { TestCases } from '../../';
+import { TestCases, TestData } from '../../';
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
-import { initProgressBar, updateProgressBar } from './progress';
+import { initProgressBar, updateProgressBar, setError } from './progress';
 
 let currentTestCase = '';
 
@@ -62,11 +62,7 @@ export async function loadTest(
   // run all steps
   if (step === 'all') {
     for (let s = 0; s < data.length; s++) {
-      const test = data[s];
-      document.getElementById('description')!.innerText =
-        test.description || '';
-      updateProgressBar(s);
-      await test.fn(testData);
+      await executeStep(data, s, testData);
     }
     return true;
   }
@@ -75,9 +71,25 @@ export async function loadTest(
   if (step < 0 || step >= data.length) {
     return false;
   }
-  const test = data[step];
-  document.getElementById('description')!.innerText = test.description || '';
-  updateProgressBar(step);
-  await test.fn(testData);
+  await executeStep(data, step, testData);
   return true;
+}
+
+async function executeStep(tests: TestCases, step: number, data: TestData) {
+  const testCase = tests[step];
+  const errorsElem = document.getElementById('errors')!;
+  document.getElementById('description')!.innerText =
+    testCase.description || '';
+  updateProgressBar(step);
+
+  try {
+    errorsElem.style.display = 'none';
+    await testCase.fn(data);
+  } catch (error) {
+    setError(step);
+    errorsElem.style.display = '';
+    errorsElem.innerHTML = `<pre>${error.toString()}</pre>`;
+    // tslint:disable-next-line: no-console
+    console.error(error);
+  }
 }

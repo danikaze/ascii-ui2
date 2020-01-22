@@ -73,6 +73,15 @@ export function updateProgressBar(step: number): void {
 }
 
 /**
+ * Mark a step as having a runtime error
+ */
+export function setError(step: number): void {
+  document
+    .querySelector('#progress-bar')!
+    .children[step].classList.add('error');
+}
+
+/**
  * Select a test case step executing the necessary ones to reach that state
  */
 async function selectStep(step: number): Promise<void> {
