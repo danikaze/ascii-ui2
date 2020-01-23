@@ -1,7 +1,7 @@
+import { TestCases, BrowserTestData } from '../../';
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
-import { initProgressBar, updateProgressBar } from './progress';
-import { TestCases } from '@vr-test';
+import { initProgressBar, updateProgressBar, setError } from './progress';
 
 let currentTestCase = '';
 
@@ -14,10 +14,13 @@ let currentTestCase = '';
  * Returns `false` if the specified step didn't exist, `true` if it was executed.
  * Even if the step doesn't exist, it will prepare the page
  */
-export async function loadTest(
+export async function loadTest<R extends {}>(
   testCase: string,
   options: LoadTestOptions = { step: 'all' }
-): Promise<boolean> {
+): Promise<R | void> {
+  /*
+   * 1. test loading
+   */
   let data: TestCases;
   const testName = testCase.replace(/\\/g, '/');
   try {
@@ -29,12 +32,15 @@ export async function loadTest(
   } catch (e) {
     // tslint:disable-next-line: no-console
     console.warn(`data not found for test "${testName}"`);
-    return false;
+    return;
   }
 
+  /*
+   * 2. test preparation
+   */
   const nSteps = data.length;
   const { step } = options as Required<LoadTestOptions>;
-  let canvas = document.querySelector<HTMLCanvasElement>('#test canvas');
+  let canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
 
   // select the active element in the index
   setActiveTest(testName);
@@ -48,36 +54,58 @@ export async function loadTest(
   }
   currentTestCase = testCase;
 
-  // replace the canvas by a new one to ensure resetting it
-  if (!canvas || step === 'all' || step <= 0 || step >= nSteps) {
-    canvas = document.createElement('canvas');
-    const container = document.getElementById('test')!;
-    container.innerHTML = '';
-    container.append(canvas);
+  // resizing the canvas will reset it
+  if (step === 'all' || step <= 0 || step >= nSteps) {
+    canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
+    // create a new canvas just to get the default size ^^;
+    const temp = document.createElement('canvas');
+    canvas.width = temp.width;
+    canvas.height = temp.height;
   }
 
-  // execute tests
+  /*
+   * 3. test execution
+   */
   const testData = { canvas };
 
   // run all steps
   if (step === 'all') {
+    let returnData: R | void = undefined;
     for (let s = 0; s < data.length; s++) {
-      const test = data[s];
-      document.getElementById('description')!.innerText =
-        test.description || '';
-      updateProgressBar(s);
-      await test.fn(testData);
+      returnData = await executeStep(data, s, testData);
     }
-    return true;
+    return returnData;
   }
 
   // run only one step
   if (step < 0 || step >= data.length) {
-    return false;
+    return;
   }
-  const test = data[step];
-  document.getElementById('description')!.innerText = test.description || '';
+  return await executeStep(data, step, testData);
+}
+
+/**
+ * Execute only one step of a specific test case
+ */
+async function executeStep<R>(
+  tests: TestCases,
+  step: number,
+  data: BrowserTestData
+): Promise<R | void> {
+  const testCase = tests[step];
+  const errorsElem = document.getElementById('errors')!;
+  document.getElementById('description')!.innerText =
+    testCase.description || '';
   updateProgressBar(step);
-  await test.fn(testData);
-  return true;
+
+  try {
+    errorsElem.style.display = 'none';
+    return (await testCase.test(data)) as R;
+  } catch (error) {
+    setError(step);
+    errorsElem.style.display = '';
+    errorsElem.innerHTML = `<pre>${error.toString()}</pre>`;
+    // tslint:disable-next-line: no-console
+    console.error(error);
+  }
 }

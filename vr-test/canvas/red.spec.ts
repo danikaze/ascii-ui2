@@ -1,9 +1,9 @@
-import { TestCases } from '..';
+import { TestCases } from '@test';
 
 export const data: TestCases = [
   {
     description: 'Should render a red square over white background',
-    fn: ({ canvas }) => {
+    test: ({ canvas }) => {
       const ctx = canvas.getContext('2d')!;
 
       ctx.fillStyle = 'white';

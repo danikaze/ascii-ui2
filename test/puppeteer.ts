@@ -7,9 +7,11 @@ import { sync as mkdirp } from 'mkdirp';
 import { compareImgs } from './compare-imgs';
 import { TestWindow } from './html';
 import { VR_TEST_FOLDER } from './utils';
+import { TestCases, PuppeteerTestData } from '@test';
 
 export interface VrTestOptions {
   testCase: string;
+  steps: TestCases;
   page: puppeteer.Page;
   preserveImages: boolean;
   expectedFolderPath: string;
@@ -29,6 +31,7 @@ export interface VrTestOptions {
  */
 export async function runVrTest({
   testCase,
+  steps,
   page,
   preserveImages,
   expectedFolderPath,
@@ -44,58 +47,111 @@ export async function runVrTest({
 
   let allOk = true;
 
-  async function onStep(step: number): Promise<void> {
-    const expectedPath = getImageFilename('expected', step);
-    const execPath = getImageFilename('exec', step);
-    const isNewTest = !existsSync(expectedPath);
-    const canvasHandler = await page.evaluateHandle(() =>
-      document.querySelector('#test canvas')
-    );
+  const puppeteerTestData: PuppeteerTestData = {
+    page,
+    canvasHandler: await getPageCanvasHandler(page),
+    getBounds: async elem => {
+      const data = await elem.evaluate(elem => {
+        return JSON.stringify(elem.getBoundingClientRect());
+      });
+      return JSON.parse(data);
+    },
+  };
 
-    // if the expected image doesn't exist, is the first time we run it so just generate it
-    await canvasHandler.asElement()!.screenshot({
-      path: isNewTest ? expectedPath : execPath,
-    });
-    if (isNewTest) {
-      return;
+  // execute all the test steps of the test case
+  for (let s = 0; s < steps.length; s++) {
+    const { beforeTest, afterTest } = steps[s];
+
+    // pre-test, in puppeteer side
+    if (beforeTest) {
+      await beforeTest(puppeteerTestData);
     }
 
-    // if the expected image is there, we create one for the current test execution and compare it
-    const diffPath = getImageFilename('diff', step);
-    const imagesAreEqual = await compareImgs(expectedPath, execPath, {
-      diffPath,
-    });
-    allOk = allOk && imagesAreEqual;
-    assert.isTrue(
-      imagesAreEqual,
-      `Image comparison failed. Difference stored in ${relative(
-        VR_TEST_FOLDER,
-        diffPath
-      )}`
-    );
-  }
-
-  // execute all the test steps
-  let step = 0;
-  for (;;) {
-    const testExecuted = await page.evaluate(
+    // test, in browser side
+    const browserData = await page.evaluate(
       async (testCase, step) => {
         return await ((window as unknown) as TestWindow).loadTest(testCase, {
           step,
         });
       },
       testCase,
-      step
+      s
     );
 
-    if (!testExecuted) {
-      break;
+    allOk = allOk && (await checkBrowserStatus(page, s, getImageFilename));
+
+    // tests shouldn't modify the canvas element
+    const canvasBeforeTest = puppeteerTestData.canvasHandler;
+    const canvasAfterTest = await getPageCanvasHandler(page);
+    const hasCanvasChanged = await page.evaluate(
+      (c1, c2) => c1 !== c2,
+      canvasBeforeTest,
+      canvasAfterTest
+    );
+    if (hasCanvasChanged) {
+      throw new Error(`test canvas was modified by ${testCase} at step ${s}`);
     }
-    await onStep(step);
-    step++;
+
+    // post-test, in puppeteer side
+    if (afterTest) {
+      await afterTest({
+        ...browserData,
+        ...puppeteerTestData,
+      });
+    }
   }
 
   if (allOk && !preserveImages) {
     rimraf(execFolderPath);
   }
+}
+
+/**
+ * Return a JsHandler for the page <canvas> element
+ */
+async function getPageCanvasHandler(
+  page: puppeteer.Page
+): Promise<puppeteer.JSHandle<HTMLCanvasElement>> {
+  return page.evaluateHandle(() => document.querySelector('#test canvas'));
+}
+
+/**
+ * Check in the browser if the result of an step is the expected one.
+ * If there's nothing expected, save the current result as the expected for future tests
+ */
+async function checkBrowserStatus(
+  page: puppeteer.Page,
+  step: number,
+  getImageFilename: (type: 'expected' | 'exec' | 'diff', step: number) => string
+): Promise<boolean> {
+  const expectedPath = getImageFilename('expected', step);
+  const execPath = getImageFilename('exec', step);
+  const isNewTest = !existsSync(expectedPath);
+  const canvasHandler = await getPageCanvasHandler(page);
+
+  // if the expected image doesn't exist, is the first time we run it so just generate it
+  await canvasHandler.asElement()!.screenshot({
+    path: isNewTest ? expectedPath : execPath,
+  });
+
+  // if is the first time, then we don't need to compare anything and we just finish
+  if (isNewTest) {
+    return true;
+  }
+
+  // if the expected image is there, we create one for the current test execution and compare it
+  const diffPath = getImageFilename('diff', step);
+  const imagesAreEqual = await compareImgs(expectedPath, execPath, {
+    diffPath,
+  });
+
+  assert.isTrue(
+    imagesAreEqual,
+    `Image comparison failed. Difference stored in ${relative(
+      VR_TEST_FOLDER,
+      diffPath
+    )}`
+  );
+
+  return imagesAreEqual;
 }

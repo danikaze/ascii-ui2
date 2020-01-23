@@ -7,7 +7,10 @@ export interface LoadTestOptions {
 }
 
 export interface TestWindow extends Window {
-  loadTest: (testCase: string, options?: LoadTestOptions) => Promise<boolean>;
+  loadTest: <R extends {} = {}>(
+    testCase: string,
+    options?: LoadTestOptions
+  ) => Promise<R | void>;
 }
 
 export function initPage() {
