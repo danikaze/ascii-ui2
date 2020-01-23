@@ -42,4 +42,19 @@ export const data: TestCases = [
       buffer.render();
     },
   },
+  {
+    description: 'Hiding the element should not change their z-index order',
+    test: () => {
+      yellow.toggle();
+      buffer.render();
+    },
+  },
+  {
+    description:
+      'Showing the element again should not change their z-index order',
+    test: () => {
+      yellow.toggle();
+      buffer.render();
+    },
+  },
 ];

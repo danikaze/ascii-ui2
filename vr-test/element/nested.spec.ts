@@ -63,4 +63,18 @@ export const data: TestCases = [
       buffer.render();
     },
   },
+  {
+    description: 'Hiding an element should hide its children too',
+    test: () => {
+      green.toggle();
+      buffer.render();
+    },
+  },
+  {
+    description: 'Showing it again should show all its children too',
+    test: () => {
+      green.toggle();
+      buffer.render();
+    },
+  },
 ];

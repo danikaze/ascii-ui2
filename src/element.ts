@@ -11,6 +11,7 @@ export interface ElementOptions extends NodeOptions<Element, Element> {
   y?: number;
   width?: number;
   height?: number;
+  visible?: boolean;
 }
 
 export class Element extends Node<Element, Element> {
@@ -20,6 +21,7 @@ export class Element extends Node<Element, Element> {
   protected width: number;
   protected height: number;
   protected absPos!: Viewport;
+  protected visible: boolean;
   protected readonly content: Tile[][] = [];
 
   constructor(options: ElementOptions = {}) {
@@ -29,6 +31,7 @@ export class Element extends Node<Element, Element> {
     this.y = options.y || 0;
     this.width = options.width || 0;
     this.height = options.height || 0;
+    this.visible = options.visible !== false;
 
     this.recalculateCoords = this.recalculateCoords.bind(this);
     this.onAdopt = this.onAdopt.bind(this);
@@ -133,12 +136,49 @@ export class Element extends Node<Element, Element> {
   }
 
   /**
+   * Shows the element making it visible
+   */
+  public show(): void {
+    if (this.visible) return;
+    this.visible = true;
+  }
+
+  /**
+   * Hides the element making it invisible
+   */
+  public hide(): void {
+    if (!this.visible) return;
+    this.visible = false;
+    this.clearArea();
+  }
+
+  /**
+   * Switch between showing/not-showing
+   */
+  public toggle(): void {
+    if (this.visible) {
+      return this.hide();
+    }
+    this.show();
+  }
+
+  /**
+   * Gets if the element is currently visible or not
+   */
+  public isVisible(): boolean {
+    return this.visible;
+  }
+
+  /**
    * This is the function each Element should implement, to set the visible contents
    * Note that this only updates the element content, but not the buffer itself, so
    * a `buffer.render()` call is still required
    */
   protected setContent(): void {}
 
+  /**
+   * Remove the this element's content from the buffer clearing it
+   */
   protected clearArea(): void {
     if (this.buffer) {
       this.buffer.clear(

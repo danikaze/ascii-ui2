@@ -53,4 +53,18 @@ export const data: TestCases = [
       buffer.render();
     },
   },
+  {
+    description: 'Hide an element',
+    test: () => {
+      yellow.hide();
+      buffer.render();
+    },
+  },
+  {
+    description: 'Show an element again',
+    test: () => {
+      yellow.show();
+      buffer.render();
+    },
+  },
 ];

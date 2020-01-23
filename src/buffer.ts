@@ -27,6 +27,7 @@ interface FriendElement {
   children: FriendElement[];
   content: Tile[][];
   absPos: Viewport;
+  visible: boolean;
 }
 
 /**
@@ -353,6 +354,8 @@ export class Buffer extends NodeCanvas<Element, never> {
     const matrix = this.matrix;
 
     for (const elem of element.children) {
+      if (!elem.visible) continue;
+
       const { absPos, content } = elem;
       const col0 = Math.max(viewport.col0, absPos.col0);
       const row0 = Math.max(viewport.row0, absPos.row0);
