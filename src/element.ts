@@ -6,14 +6,14 @@ import { resizeMatrix } from './util/resize-matrix';
 export type EventMove = Event;
 export type EventResize = Event;
 
-export interface ElementOptions extends NodeOptions {
+export interface ElementOptions extends NodeOptions<Element, Element> {
   x?: number;
   y?: number;
   width?: number;
   height?: number;
 }
 
-export class Element extends Node {
+export class Element extends Node<Element, Element> {
   protected buffer?: Buffer;
   protected x: number;
   protected y: number;
@@ -154,7 +154,7 @@ export class Element extends Node {
    * Recalculate internal data after moving or resizing the Element
    */
   protected recalculateCoords(event?: Event): void {
-    const parentPos = this.parent && (this.parent as Element).absPos;
+    const parentPos = this.parent && this.parent.absPos;
     this.absPos = {
       col0: (parentPos ? parentPos.col0 : 0) + this.x,
       row0: (parentPos ? parentPos.row0 : 0) + this.y,
@@ -176,9 +176,7 @@ export class Element extends Node {
    */
   protected onAdopt(event: EventAdopted): void {
     this.setBuffer(
-      this.parent instanceof Buffer
-        ? this.parent
-        : (this.parent as Element).buffer
+      this.parent instanceof Buffer ? this.parent : this.parent!.buffer
     );
     this.recalculateCoords();
     event.stopPropagation();
@@ -198,7 +196,7 @@ export class Element extends Node {
   protected setBuffer(buffer: Buffer | undefined): void {
     this.buffer = buffer;
     for (const child of this.children) {
-      (child as Element).setBuffer(buffer);
+      child.setBuffer(buffer);
     }
   }
 }

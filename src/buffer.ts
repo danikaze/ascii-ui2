@@ -8,6 +8,7 @@ import {
 } from './model/buffer';
 import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
+import { Element } from './element';
 
 interface Cell {
   /** Horizontal coordinates relative to the canvas in pixels */
@@ -31,7 +32,7 @@ interface FriendElement {
 /**
  * Low level interface for controlling the canvas output
  */
-export class Buffer extends NodeCanvas {
+export class Buffer extends NodeCanvas<Element, never> {
   public static readonly defaultOptions: Omit<BufferOptions, 'canvas'> = {
     tileWidth: 12,
     tileHeight: 16,

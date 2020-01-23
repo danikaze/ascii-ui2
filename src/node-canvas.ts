@@ -44,7 +44,7 @@ type NoDataEventTypes = 'focus' | 'blur';
  * Special type of Node that handles the events of the top level,
  * catching key, mouse... type of events directly from the canvas
  */
-export class NodeCanvas extends Node {
+export class NodeCanvas<C extends Node, P extends Node> extends Node<C, P> {
   constructor(options: EventEmitterRootOptions) {
     super();
 

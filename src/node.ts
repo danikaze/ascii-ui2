@@ -18,17 +18,17 @@ export interface EventOrphaned extends Event {
   oldParent: Node;
 }
 
-export interface NodeOptions {
-  parent?: Node;
-  children?: Node[];
+export interface NodeOptions<C extends Node, P extends Node> {
+  parent?: P;
+  children?: C[];
 }
 
-export class Node {
+export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
   protected readonly listeners = new Map<string, EventHandler[]>();
-  protected parent?: Node;
-  protected children: Node[] = [];
+  protected parent?: P;
+  protected children: C[] = [];
 
-  constructor(options: NodeOptions = {}) {
+  constructor(options: NodeOptions<C, P> = {}) {
     if (options.parent) {
       options.parent.append(this);
     }
@@ -43,7 +43,7 @@ export class Node {
   /**
    * Retrieve the parent of the Node, if any
    */
-  public getParent(): Node | undefined {
+  public getParent(): P | undefined {
     return this.parent;
   }
 
@@ -51,14 +51,14 @@ export class Node {
    * Get a list of the children attached to the Node.
    * Can be empty
    */
-  public getChildren(): Node[] {
+  public getChildren(): C[] {
     return this.children;
   }
 
   /**
    * Insert a children into the current node, in the specified position
    */
-  public insert(node: Node, index: number): void {
+  public insert(node: C, index: number): void {
     const oldParent = node.parent;
     if (oldParent) {
       node.parent!.remove(node);
@@ -72,14 +72,14 @@ export class Node {
   /**
    * Insert a children as the first one
    */
-  public prepend(node: Node): void {
+  public prepend(node: C): void {
     this.insert(node, 0);
   }
 
   /**
    * Insert a children as the last one
    */
-  public append(node: Node): void {
+  public append(node: C): void {
     this.insert(node, this.children.length);
   }
 
@@ -87,7 +87,7 @@ export class Node {
    * Dettach a children from the node.
    * If it's not found, does nothing
    */
-  public remove(node: Node): void {
+  public remove(node: C): void {
     const index = this.children.indexOf(node);
     if (index === -1) return;
 
@@ -167,3 +167,5 @@ export class Node {
     } while (el && !stop);
   }
 }
+
+class BasicNode extends Node<BasicNode, BasicNode> {}
