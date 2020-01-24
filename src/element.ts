@@ -1,28 +1,47 @@
+import { Tile, Viewport } from '@src';
 import { Node, NodeOptions, EventHandler, EventAdopted, Event } from './node';
 import { Buffer } from './buffer';
-import { Viewport, Tile } from './model/buffer';
 import { resizeMatrix } from './util/resize-matrix';
 
+/**
+ * Event emmited to each children of the Element, when the element is moved
+ */
 export type EventMove = Event;
+/**
+ * Event emmited to itself, when the element is resized
+ */
 export type EventResize = Event;
 
 export interface ElementOptions extends NodeOptions<Element, Element> {
+  /** Column relative to its parent position */
   x?: number;
+  /** Row relative to its parent position */
   y?: number;
+  /** Width of the element in number of columns */
   width?: number;
+  /** Height of the element in number of columns */
   height?: number;
+  /** If visible or not by default */
   visible?: boolean;
 }
 
 export class Element extends Node<Element, Element> {
-  protected buffer?: Buffer;
-  protected x: number;
-  protected y: number;
-  protected width: number;
-  protected height: number;
-  protected absPos!: Viewport;
-  protected visible: boolean;
+  /** Content of the element to be rendered */
   protected readonly content: Tile[][] = [];
+  /** Position of the element in columns relative to its parent */
+  protected x: number;
+  /** Position of the element in rows relative to its parent */
+  protected y: number;
+  /** Width of the element in number of columns */
+  protected width: number;
+  /** Height of the element in number of columns */
+  protected height: number;
+  /** Absolute position of the element relative to the buffer */
+  protected absPos!: Viewport;
+  /** If the element is visible or hidden */
+  protected visible: boolean;
+  /** Associated buffer (needed for clearing the element area) */
+  private buffer?: Buffer;
 
   constructor(options: ElementOptions = {}) {
     super(options);
@@ -82,7 +101,9 @@ export class Element extends Node<Element, Element> {
    * Set the position for the Element, relative to its parent
    */
   public setPosition(col: number, row: number): void {
-    this.clearArea();
+    if (this.visible) {
+      this.clearArea();
+    }
     this.x = col;
     this.y = row;
     this.recalculateCoords();
@@ -191,27 +212,6 @@ export class Element extends Node<Element, Element> {
   }
 
   /**
-   * Recalculate internal data after moving or resizing the Element
-   */
-  protected recalculateCoords(event?: Event): void {
-    const parentPos = this.parent && this.parent.absPos;
-    this.absPos = {
-      col0: (parentPos ? parentPos.col0 : 0) + this.x,
-      row0: (parentPos ? parentPos.row0 : 0) + this.y,
-      col1: (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1,
-      row1: (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1,
-    };
-
-    if (event) {
-      event.stopPropagation();
-    }
-
-    for (const child of this.children) {
-      child.emit('move');
-    }
-  }
-
-  /**
    * Handler called when this Element is attached to another one
    */
   protected onAdopt(event: EventAdopted): void {
@@ -233,10 +233,31 @@ export class Element extends Node<Element, Element> {
   /**
    * Set the specified buffer to the Element and all its children
    */
-  protected setBuffer(buffer: Buffer | undefined): void {
+  private setBuffer(buffer: Buffer | undefined): void {
     this.buffer = buffer;
     for (const child of this.children) {
       child.setBuffer(buffer);
+    }
+  }
+
+  /**
+   * Recalculate internal data after moving or resizing the Element
+   */
+  private recalculateCoords(event?: Event): void {
+    const parentPos = this.parent && this.parent.absPos;
+    this.absPos = {
+      col0: (parentPos ? parentPos.col0 : 0) + this.x,
+      row0: (parentPos ? parentPos.row0 : 0) + this.y,
+      col1: (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1,
+      row1: (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1,
+    };
+
+    if (event) {
+      event.stopPropagation();
+    }
+
+    for (const child of this.children) {
+      child.emit('move');
     }
   }
 }

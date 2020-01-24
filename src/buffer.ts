@@ -1,14 +1,31 @@
 import { extendObjectsOnly } from 'extend-objects-only';
+import { Tile, Viewport } from '@src';
 import { NodeCanvas } from './node-canvas';
-import {
-  BufferOptions,
-  Tile,
-  Viewport,
-  BufferRenderStats,
-} from './model/buffer';
 import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
 import { Element } from './element';
+
+export interface BufferOptions {
+  /** Associated canvas element where the buffer will be rendered */
+  canvas: HTMLCanvasElement;
+  /** Width of one tile, in pixels */
+  tileWidth: number;
+  /** Height of one tile, in pixels */
+  tileHeight: number;
+  /** Number of columns of the buffer */
+  cols: number;
+  /** Number of rows of the buffer */
+  rows: number;
+  /** Style to use when clearing an area of the buffer */
+  clearStyle: Tile;
+}
+
+export interface BufferRenderStats {
+  /** Milliseconds the render needed */
+  duration: number;
+  /** Number of tiles rendered */
+  tiles: number;
+}
 
 interface Cell {
   /** Horizontal coordinates relative to the canvas in pixels */
@@ -20,8 +37,8 @@ interface Cell {
 }
 
 /**
- * Get the idea of friend classes of C++,
- * where two linked classes can access private members of each others
+ * List of Element properties accessed directly from the buffer,
+ * from the idea of friend classes of C++
  */
 interface FriendElement {
   children: FriendElement[];
@@ -49,29 +66,33 @@ export class Buffer extends NodeCanvas<Element, never> {
     },
   };
 
-  /*
-   * Options-related vars
-   */
-  protected readonly canvas: HTMLCanvasElement;
-  protected readonly ctx: CanvasRenderingContext2D;
-  protected readonly lastRenderStats: BufferRenderStats = {
-    duration: 0,
-    tiles: 0,
-  };
+  /** Width of the tile, in pixels */
   protected tileW: number;
+  /** Height of the tile in pixels */
   protected tileH: number;
+  /** Number of columns of the buffer */
   protected cols: number = 0;
+  /** Number of rows of the buffer */
   protected rows: number = 0;
+  /** Style to be used when clearing a buffer area */
   protected clearStyle: Required<Tile>;
-  protected dirtyTiles: Cell[] = [];
 
-  /*
-   * State-related vars
-   */
   /** Current buffer state */
   protected readonly matrix: Cell[][] = []; // [row][col]
   /** List of pushed viewports. Active one is `viewports[0]`, if any */
   protected readonly viewports: Viewport[] = [];
+
+  /** List of cells needed to be re-rendered */
+  private dirtyCells: Cell[] = [];
+  /** Canvas element where to render the buffer contents */
+  private readonly canvas: HTMLCanvasElement;
+  /** Context of the canvas element usde for rendering */
+  private readonly ctx: CanvasRenderingContext2D;
+  /** Stats about the last render */
+  private readonly lastRenderStats: BufferRenderStats = {
+    duration: 0,
+    tiles: 0,
+  };
 
   constructor(options: Partial<BufferOptions> & Pick<BufferOptions, 'canvas'>) {
     super({
@@ -175,7 +196,7 @@ export class Buffer extends NodeCanvas<Element, never> {
     this.renderChildren((this as unknown) as FriendElement);
 
     ctx.textBaseline = 'bottom';
-    for (const cell of this.dirtyTiles) {
+    for (const cell of this.dirtyCells) {
       const { x, y, tile } = cell;
 
       if (tile.bg) {
@@ -190,8 +211,8 @@ export class Buffer extends NodeCanvas<Element, never> {
       }
     }
 
-    this.lastRenderStats.tiles = this.dirtyTiles.length;
-    this.dirtyTiles = [];
+    this.lastRenderStats.tiles = this.dirtyCells.length;
+    this.dirtyCells = [];
 
     this.lastRenderStats.duration = performance.now() - startTime;
     this.emit('render');
@@ -262,7 +283,7 @@ export class Buffer extends NodeCanvas<Element, never> {
      */
     for (const row of this.matrix) {
       for (const cell of row) {
-        this.dirtyTiles.push(cell);
+        this.dirtyCells.push(cell);
       }
     }
     this.render();
@@ -291,7 +312,7 @@ export class Buffer extends NodeCanvas<Element, never> {
       const row = matrix[y];
       for (let x = xStart; x <= xEnd; x++) {
         Object.assign(row[x].tile, this.clearStyle);
-        this.dirtyTiles.push(row[x]);
+        this.dirtyCells.push(row[x]);
       }
     }
   }
@@ -315,7 +336,7 @@ export class Buffer extends NodeCanvas<Element, never> {
   /**
    * Assign new contents for a valid cell, after doing checks to improve performance:
    * - Only do it when changing
-   * - Avoiding duplicated dirty tile
+   * - Avoiding adding duplicated dirty tiles
    */
   protected assignCellContents(cell: Cell, tile: Tile): void {
     let change = false;
@@ -338,8 +359,8 @@ export class Buffer extends NodeCanvas<Element, never> {
     if (!change) return;
 
     Object.assign(cell.tile, tile);
-    if (!this.dirtyTiles.includes(cell)) {
-      this.dirtyTiles.push(cell);
+    if (!this.dirtyCells.includes(cell)) {
+      this.dirtyCells.push(cell);
     }
   }
 
