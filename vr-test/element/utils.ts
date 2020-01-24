@@ -1,5 +1,5 @@
+import { Tile } from '@src';
 import { Element, ElementOptions } from '@src/element';
-import { Tile } from '@src/model/buffer';
 
 export function fillMatrix(matrix: Tile[][], tile: Tile): void {
   for (const row of matrix) {

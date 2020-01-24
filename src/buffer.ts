@@ -1,14 +1,25 @@
 import { extendObjectsOnly } from 'extend-objects-only';
+import { Tile, Viewport } from '@src';
 import { NodeCanvas } from './node-canvas';
-import {
-  BufferOptions,
-  Tile,
-  Viewport,
-  BufferRenderStats,
-} from './model/buffer';
 import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
 import { Element } from './element';
+
+export interface BufferOptions {
+  canvas: HTMLCanvasElement;
+  tileWidth: number;
+  tileHeight: number;
+  cols: number;
+  rows: number;
+  clearStyle: Tile;
+}
+
+export interface BufferRenderStats {
+  /** Milliseconds the render needed */
+  duration: number;
+  /** Number of tiles rendered */
+  tiles: number;
+}
 
 interface Cell {
   /** Horizontal coordinates relative to the canvas in pixels */

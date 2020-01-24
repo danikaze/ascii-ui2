@@ -1,6 +1,6 @@
-import { Buffer } from '@src/buffer';
-import { Tile, Viewport } from '@src/model/buffer';
 import { TestCases } from '@test';
+import { Tile, Viewport } from '@src';
+import { Buffer } from '@src/buffer';
 
 let buffer: Buffer;
 const intersection1: Viewport = {

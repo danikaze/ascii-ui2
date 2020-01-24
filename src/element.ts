@@ -1,6 +1,6 @@
+import { Tile, Viewport } from '@src';
 import { Node, NodeOptions, EventHandler, EventAdopted, Event } from './node';
 import { Buffer } from './buffer';
-import { Viewport, Tile } from './model/buffer';
 import { resizeMatrix } from './util/resize-matrix';
 
 export type EventMove = Event;
