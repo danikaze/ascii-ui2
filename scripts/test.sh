@@ -27,6 +27,11 @@ do
   shift
 done
 
+if [[ ${TYPE} == "" ]]; then
+  echo "* Error: One of the following options is required: --vr | --ut | --all"
+  exit 1
+fi
+
 NYC="node_modules/nyc/bin/nyc.js node_modules/mocha/bin/mocha -r node_modules/ts-node/register${NODE_PARAMS} -r tsconfig-paths/register --timeout 5000"
 
 if [[ ${TYPE} =~ "UT" ]]; then
@@ -40,5 +45,10 @@ if [[ ${TYPE} =~ "VR" ]]; then
 fi
 
 cd "${PROJECT_ROOT}"
+
 $NYC ${TEST_FILES}
+EXIT_CODE=$?
+
 cd "${PWD}"
+
+exit ${EXIT_CODE}
