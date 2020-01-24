@@ -15,6 +15,7 @@ export interface ElementOptions extends NodeOptions<Element, Element> {
 }
 
 export class Element extends Node<Element, Element> {
+  protected readonly content: Tile[][] = [];
   protected buffer?: Buffer;
   protected x: number;
   protected y: number;
@@ -22,7 +23,6 @@ export class Element extends Node<Element, Element> {
   protected height: number;
   protected absPos!: Viewport;
   protected visible: boolean;
-  protected readonly content: Tile[][] = [];
 
   constructor(options: ElementOptions = {}) {
     super(options);
@@ -191,27 +191,6 @@ export class Element extends Node<Element, Element> {
   }
 
   /**
-   * Recalculate internal data after moving or resizing the Element
-   */
-  protected recalculateCoords(event?: Event): void {
-    const parentPos = this.parent && this.parent.absPos;
-    this.absPos = {
-      col0: (parentPos ? parentPos.col0 : 0) + this.x,
-      row0: (parentPos ? parentPos.row0 : 0) + this.y,
-      col1: (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1,
-      row1: (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1,
-    };
-
-    if (event) {
-      event.stopPropagation();
-    }
-
-    for (const child of this.children) {
-      child.emit('move');
-    }
-  }
-
-  /**
    * Handler called when this Element is attached to another one
    */
   protected onAdopt(event: EventAdopted): void {
@@ -233,10 +212,31 @@ export class Element extends Node<Element, Element> {
   /**
    * Set the specified buffer to the Element and all its children
    */
-  protected setBuffer(buffer: Buffer | undefined): void {
+  private setBuffer(buffer: Buffer | undefined): void {
     this.buffer = buffer;
     for (const child of this.children) {
       child.setBuffer(buffer);
+    }
+  }
+
+  /**
+   * Recalculate internal data after moving or resizing the Element
+   */
+  private recalculateCoords(event?: Event): void {
+    const parentPos = this.parent && this.parent.absPos;
+    this.absPos = {
+      col0: (parentPos ? parentPos.col0 : 0) + this.x,
+      row0: (parentPos ? parentPos.row0 : 0) + this.y,
+      col1: (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1,
+      row1: (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1,
+    };
+
+    if (event) {
+      event.stopPropagation();
+    }
+
+    for (const child of this.children) {
+      child.emit('move');
     }
   }
 }

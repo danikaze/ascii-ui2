@@ -102,7 +102,7 @@ export class NodeCanvas<C extends Node, P extends Node> extends Node<C, P> {
   /**
    * Emit mouse events
    */
-  protected handleMouseEvent(
+  private handleMouseEvent(
     tileWidth: number,
     tileHeight: number,
     type: MouseEventTypes,
@@ -125,7 +125,7 @@ export class NodeCanvas<C extends Node, P extends Node> extends Node<C, P> {
   /**
    * Emit key events
    */
-  protected handleKeys(type: KeyEventTypes, event: KeyboardEvent): void {
+  private handleKeys(type: KeyEventTypes, event: KeyboardEvent): void {
     const param = {
       shiftKey: event.shiftKey,
       ctrlKey: event.ctrlKey,
@@ -141,7 +141,7 @@ export class NodeCanvas<C extends Node, P extends Node> extends Node<C, P> {
   /**
    * Emit any kind of events without data
    */
-  protected handleNoDataEvents(type: NoDataEventTypes): void {
+  private handleNoDataEvents(type: NoDataEventTypes): void {
     this.emit(type);
   }
 }

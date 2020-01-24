@@ -49,29 +49,24 @@ export class Buffer extends NodeCanvas<Element, never> {
     },
   };
 
-  /*
-   * Options-related vars
-   */
-  protected readonly canvas: HTMLCanvasElement;
-  protected readonly ctx: CanvasRenderingContext2D;
-  protected readonly lastRenderStats: BufferRenderStats = {
-    duration: 0,
-    tiles: 0,
-  };
   protected tileW: number;
   protected tileH: number;
   protected cols: number = 0;
   protected rows: number = 0;
   protected clearStyle: Required<Tile>;
-  protected dirtyTiles: Cell[] = [];
 
-  /*
-   * State-related vars
-   */
   /** Current buffer state */
   protected readonly matrix: Cell[][] = []; // [row][col]
   /** List of pushed viewports. Active one is `viewports[0]`, if any */
   protected readonly viewports: Viewport[] = [];
+
+  private dirtyTiles: Cell[] = [];
+  private readonly canvas: HTMLCanvasElement;
+  private readonly ctx: CanvasRenderingContext2D;
+  private readonly lastRenderStats: BufferRenderStats = {
+    duration: 0,
+    tiles: 0,
+  };
 
   constructor(options: Partial<BufferOptions> & Pick<BufferOptions, 'canvas'>) {
     super({

@@ -24,9 +24,9 @@ export interface NodeOptions<C extends Node, P extends Node> {
 }
 
 export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
-  protected readonly listeners = new Map<string, EventHandler[]>();
   protected parent?: P;
   protected children: C[] = [];
+  private readonly listeners = new Map<string, EventHandler[]>();
 
   constructor(options: NodeOptions<C, P> = {}) {
     if (options.parent) {
