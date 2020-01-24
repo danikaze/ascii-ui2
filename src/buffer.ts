@@ -263,8 +263,12 @@ export class Buffer extends NodeCanvas<Element, never> {
     const { canvas, clearStyle, tileW, tileH } = this;
     const screenViewport = this.viewports[this.viewports.length - 1];
 
-    canvas.width = cols * tileW;
-    canvas.height = rows * tileH;
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    canvas.width = cols * tileW * devicePixelRatio;
+    canvas.height = rows * tileH * devicePixelRatio;
+    canvas.style.width = `${cols * tileW}px`;
+    canvas.style.height = `${rows * tileH}px`;
+    this.ctx.scale(devicePixelRatio, devicePixelRatio);
 
     resizeMatrix(this.matrix, cols, rows, (x, y) => ({
       x: x * tileW,
