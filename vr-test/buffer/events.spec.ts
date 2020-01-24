@@ -120,8 +120,8 @@ export const data: TestCases<BufferTestInfo> = [
         for (let col = 0; col < bufferWidth; col++) {
           nClicks++;
           await page.mouse.click(
-            bounds.x + tileWidth * col + tileWidth / 2,
-            bounds.y + tileHeight * row + tileHeight / 2
+            bounds.x + tileWidth * col + Math.floor(tileWidth / 2),
+            bounds.y + tileHeight * row + Math.floor(tileHeight / 2)
           );
         }
       }
@@ -180,8 +180,8 @@ export const data: TestCases<BufferTestInfo> = [
       let call = 2;
       for (let row = 0; row < bufferHeight; row++) {
         for (let col = 0; col < bufferWidth; col++) {
-          const x = tileWidth * col + tileWidth / 2;
-          const y = tileHeight * row + tileHeight / 2;
+          const x = tileWidth * col + Math.floor(tileWidth / 2);
+          const y = tileHeight * row + Math.floor(tileHeight / 2);
           checkEventData(clickCalls[call][0], x, y, col, row);
           checkEventData(mouseupCalls[call][0], x, y, col, row);
           checkEventData(mousedownCalls[call][0], x, y, col, row);

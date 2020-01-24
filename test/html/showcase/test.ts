@@ -1,3 +1,5 @@
+import * as FontFaceObserver from 'fontfaceobserver';
+import { Buffer } from '@src/buffer';
 import { TestCases, BrowserTestData } from '../../';
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
@@ -35,6 +37,23 @@ export async function loadTest<R extends {}>(
     return;
   }
 
+  // tslint:disable: no-magic-numbers
+  Buffer.defaultOptions.tileWidth = 11;
+  Buffer.defaultOptions.tileHeight = 22;
+  Buffer.defaultOptions.clearStyle.offsetX = 0;
+  Buffer.defaultOptions.clearStyle.offsetY = 0;
+  Buffer.defaultOptions.clearStyle.font = '22px Fixedsys';
+
+  const font = new FontFaceObserver('Fixedsys');
+  return font.load().then(() => executeTest(testCase, options, testName, data));
+}
+
+async function executeTest<R extends {}>(
+  testCase: string,
+  options: LoadTestOptions = { step: 'all' },
+  testName: string,
+  data: TestCases
+): Promise<R | void> {
   /*
    * 2. test preparation
    */

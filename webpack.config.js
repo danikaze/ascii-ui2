@@ -1,8 +1,10 @@
+const { existsSync } = require('fs');
 const { join } = require('path');
 const { DefinePlugin } = require('webpack');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const GitRevisionPlugin = require('git-revision-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const { getTemplateVars } = require('./test/html/template');
 const {
   getDefineValues,
@@ -15,6 +17,7 @@ const {
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 const targetPath = VR_STATIC_FOLDER;
+const HTML_FOLDER = join(__dirname, 'test', 'html');
 
 module.exports = env => {
   const isProduction = env && env.prod;
@@ -84,10 +87,21 @@ module.exports = env => {
         })
       ),
       new HtmlWebpackPlugin({
-        template: join(__dirname, 'test', 'html', 'index.html'),
+        template: join(HTML_FOLDER, 'index.html'),
         filename: VR_STATIC_FILE,
         ...getTemplateVars(getChunkFiles(), gitRevisionPlugin),
       }),
-    ],
+    ].concat(
+      existsSync(join(HTML_FOLDER, 'static'))
+        ? [
+            new CopyPlugin([
+              {
+                from: HTML_FOLDER,
+                to: targetPath,
+              },
+            ]),
+          ]
+        : []
+    ),
   };
 };
