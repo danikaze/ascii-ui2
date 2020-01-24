@@ -1,30 +1,47 @@
 import { Node } from './node';
 
-export interface BufferMouseEvent {
-  button: number;
-  x: number;
-  y: number;
-  col: number;
-  row: number;
+interface UserInputEvent {
+  /** `true` if the Shift key was pressed */
   shiftKey: boolean;
+  /** `true` if the Control key was pressed */
   ctrlKey: boolean;
+  /** `true` if the Alt key was pressed */
   altKey: boolean;
+  /** `true` if the Meta key was pressed (Command in Mac) */
   metaKey: boolean;
 }
 
-export interface BufferKeyEvent {
-  shiftKey: boolean;
-  ctrlKey: boolean;
-  altKey: boolean;
-  metaKey: boolean;
+export interface BufferMouseEvent extends UserInputEvent {
+  /** Mouse button used in the event */
+  button: number;
+  /** X-Position (in pixels) of the mouse relative to the buffer */
+  x: number;
+  /** Y-Position (in pixels) of the mouse relative to the buffer */
+  y: number;
+  /** X-Position (in columns) of the mouse in the buffer */
+  col: number;
+  /** Y-Position (in rows) of the mouse in the buffer */
+  row: number;
+}
+
+export interface BufferKeyEvent extends UserInputEvent {
+  /** Name of the used key (i.e. "a") */
   key: string;
+  /** Code of the used key (i.e. "KeyA") */
   code: string;
+  /**
+   * keyCode of the used key (i.e. 65)
+   * Note that keyCode is different in keyup/keydown and keypress events
+   */
   keyCode: number;
 }
 
-export interface EventEmitterRootOptions {
+export interface NodeCanvasOptions {
+  /** Associated canvas where to listen to */
   canvas: HTMLCanvasElement;
+  /** Width of a tile (needed to calculate columns in mouse events) */
   tileWidth: number;
+  /** Height of a tile (needed to calculate rows in mouse events) */
   tileHeight: number;
 }
 
@@ -45,7 +62,7 @@ type NoDataEventTypes = 'focus' | 'blur';
  * catching key, mouse... type of events directly from the canvas
  */
 export class NodeCanvas<C extends Node, P extends Node> extends Node<C, P> {
-  constructor(options: EventEmitterRootOptions) {
+  constructor(options: NodeCanvasOptions) {
     super();
 
     const { canvas, tileWidth, tileHeight } = options;

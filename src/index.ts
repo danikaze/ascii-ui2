@@ -1,7 +1,11 @@
 export interface Viewport {
+  /** Column of the top-left corner of the Viewport */
   col0: number;
+  /** Row of the top-left corner of the Viewport */
   row0: number;
+  /** Column of the bottom-right corner of the Viewport */
   col1: number;
+  /** Row of the bottom-right corner of the Viewport */
   row1: number;
 }
 
@@ -23,6 +27,7 @@ export interface TileStyle {
 }
 
 export interface CharTile extends TileStyle {
+  /** Character to type in the tile */
   char?: string;
 }
 

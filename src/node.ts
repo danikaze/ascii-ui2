@@ -6,26 +6,38 @@ export interface Event {
 export type EventHandler = <T extends Event>(event: T) => void;
 
 export interface EventAttached extends Event {
+  /** Attached node  */
   node: Node;
 }
 export interface EventAdopted extends Event {
+  /**
+   * If the adopted node had a different parent before, this is it
+   * (new parent will be already in node.parent)
+   */
   oldParent: Node;
 }
 export interface EventDettached extends Event {
+  /* Node that was dettached from the target one */
   node: Node;
 }
 export interface EventOrphaned extends Event {
+  /** Previous parent of the orphaned node */
   oldParent: Node;
 }
 
 export interface NodeOptions<C extends Node, P extends Node> {
+  /** If specified, the new node will be attached to the parent in the constructor */
   parent?: P;
+  /** If specified, the list of children will be attached to the node in the constructor */
   children?: C[];
 }
 
 export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
+  /** Current parent, if any, of the node */
   protected parent?: P;
+  /** List of childrens of the node */
   protected children: C[] = [];
+  /** List of event handlers listening to each event type */
   private readonly listeners = new Map<string, EventHandler[]>();
 
   constructor(options: NodeOptions<C, P> = {}) {
