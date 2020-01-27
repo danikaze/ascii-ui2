@@ -1,3 +1,4 @@
+import { BrowserTestFunctionReturnData } from '@test';
 import { initSidebar } from './showcase/sidebar';
 import { loadTest } from './showcase/test';
 import { initFilter } from './showcase/filter';
@@ -10,7 +11,7 @@ export interface TestWindow extends Window {
   loadTest: <R extends {} = {}>(
     testCase: string,
     options?: LoadTestOptions
-  ) => Promise<R | void>;
+  ) => Promise<BrowserTestFunctionReturnData<R> | void>;
 }
 
 export function initPage() {

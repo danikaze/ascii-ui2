@@ -7,6 +7,7 @@ UNIT_TEST_FILES="src/**/__test/**/*.spec.ts"
 NODE_PARAMS=""
 TEST_FILES=""
 TYPE=""
+TEST_PARAMS="--noImage"
 
 while test $# -gt 0
 do
@@ -17,7 +18,8 @@ do
       ;;
     --all) TYPE="VRUT"
        ;;
-    --debug) NODE_PARAMS="${NODE_PARAMS} --inspect-brk"
+    --debug) NODE_PARAMS="${NODE_PARAMS} --inspect-brk";
+             TEST_PARAMS="${TEST_PARAMS} --debug"
        ;;
     --*) echo "Unknown param $1" && exit 1
       ;;
@@ -26,6 +28,11 @@ do
   esac
   shift
 done
+
+if [[ ${TYPE} == "" ]]; then
+  echo "* Error: One of the following options is required: --vr | --ut | --all"
+  exit 1
+fi
 
 NYC="node_modules/nyc/bin/nyc.js node_modules/mocha/bin/mocha -r node_modules/ts-node/register${NODE_PARAMS} -r tsconfig-paths/register --timeout 5000"
 
@@ -40,5 +47,10 @@ if [[ ${TYPE} =~ "VR" ]]; then
 fi
 
 cd "${PROJECT_ROOT}"
-$NYC ${TEST_FILES}
+
+$NYC ${TEST_FILES} ${TEST_PARAMS}
+EXIT_CODE=$?
+
 cd "${PWD}"
+
+exit ${EXIT_CODE}

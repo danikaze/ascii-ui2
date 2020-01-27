@@ -27,6 +27,8 @@ export const data: TestCases = [
       buffer.append(red);
       buffer.append(yellow);
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -36,6 +38,8 @@ export const data: TestCases = [
       red.setHeight(red.getHeight() - 2);
       red.setY(red.getY() + 3);
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -44,6 +48,8 @@ export const data: TestCases = [
       green = createBox('green', 5, 4);
       buffer.append(green);
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -51,6 +57,8 @@ export const data: TestCases = [
     test: () => {
       buffer.remove(green);
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -58,6 +66,8 @@ export const data: TestCases = [
     test: () => {
       yellow.hide();
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -65,6 +75,8 @@ export const data: TestCases = [
     test: () => {
       yellow.show();
       buffer.render();
+
+      return { buffer };
     },
   },
 ];

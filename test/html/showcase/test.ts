@@ -1,4 +1,10 @@
-import { TestCases, BrowserTestData } from '../../';
+import * as FontFaceObserver from 'fontfaceobserver';
+import { Buffer } from '@src/buffer';
+import {
+  TestCases,
+  BrowserTestData,
+  BrowserTestFunctionReturnData,
+} from '../../';
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
 import { initProgressBar, updateProgressBar, setError } from './progress';
@@ -17,7 +23,7 @@ let currentTestCase = '';
 export async function loadTest<R extends {}>(
   testCase: string,
   options: LoadTestOptions = { step: 'all' }
-): Promise<R | void> {
+): Promise<BrowserTestFunctionReturnData<R> | void> {
   /*
    * 1. test loading
    */
@@ -35,6 +41,23 @@ export async function loadTest<R extends {}>(
     return;
   }
 
+  // tslint:disable: no-magic-numbers
+  Buffer.defaultOptions.tileWidth = 11;
+  Buffer.defaultOptions.tileHeight = 22;
+  Buffer.defaultOptions.clearStyle.offsetX = 0;
+  Buffer.defaultOptions.clearStyle.offsetY = 0;
+  Buffer.defaultOptions.clearStyle.font = '22px Fixedsys';
+
+  const font = new FontFaceObserver('Fixedsys');
+  return font.load().then(() => executeTest(testCase, options, testName, data));
+}
+
+async function executeTest<R extends {}>(
+  testCase: string,
+  options: LoadTestOptions = { step: 'all' },
+  testName: string,
+  data: TestCases
+): Promise<BrowserTestFunctionReturnData<R> | void> {
   /*
    * 2. test preparation
    */
@@ -70,7 +93,7 @@ export async function loadTest<R extends {}>(
 
   // run all steps
   if (step === 'all') {
-    let returnData: R | void = undefined;
+    let returnData: BrowserTestFunctionReturnData | void;
     for (let s = 0; s < data.length; s++) {
       returnData = await executeStep(data, s, testData);
     }
@@ -91,7 +114,7 @@ async function executeStep<R>(
   tests: TestCases,
   step: number,
   data: BrowserTestData
-): Promise<R | void> {
+): Promise<BrowserTestFunctionReturnData<R> | void> {
   const testCase = tests[step];
   const errorsElem = document.getElementById('errors')!;
   document.getElementById('description')!.innerText =
@@ -100,7 +123,18 @@ async function executeStep<R>(
 
   try {
     errorsElem.style.display = 'none';
-    return (await testCase.test(data)) as R;
+    const testResult = await testCase.test(data);
+    // test only cares about the matrix content of the buffer
+    // and actually, not stripping the buffer, might cause errors
+    // when stringifying the data to return from puppeteer because of
+    // cyclical references
+    return ({
+      ...testResult,
+      buffer: {
+        // tslint:disable-next-line: no-any
+        matrix: (testResult.buffer as any).matrix,
+      },
+    } as unknown) as BrowserTestFunctionReturnData;
   } catch (error) {
     setError(step);
     errorsElem.style.display = '';

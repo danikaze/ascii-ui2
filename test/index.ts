@@ -1,4 +1,5 @@
 import * as puppeteer from 'puppeteer';
+import { Buffer } from '@src/buffer';
 import { basename, dirname, join, relative } from 'path';
 import { describe, before, after } from 'mocha';
 import { getVrTestFiles, VR_TEST_FOLDER } from './utils';
@@ -11,6 +12,8 @@ import {
 
 const DEBUG_MODE = process.argv.includes('--debug');
 const PRESERVE_IMAGES = DEBUG_MODE || process.argv.includes('--noRm');
+const NO_IMAGE_TEST = process.argv.includes('--noImage');
+const NO_DATA_TEST = process.argv.includes('--noData');
 
 export interface DOMRectLike {
   x: number;
@@ -28,23 +31,33 @@ export interface PuppeteerTestData {
   // need to provide custom implementation because puppeteer's returns null
   getBounds: (elem: puppeteer.JSHandle) => Promise<DOMRectLike>;
 }
+export interface PuppeteerAfterTestData<R extends {} = never>
+  extends PuppeteerTestData {
+  data: R;
+}
 export interface BrowserTestData {
   canvas: HTMLCanvasElement;
 }
-export type TestDescription<R extends {} = {}> = {
+export type TestDescription<R extends {} = never> = {
   description?: string;
   beforeTest?: PuppeteerTestFunction;
-  test: BrowserTestFunction;
-  afterTest?: PuppeteerTestFunction<R>;
+  test: BrowserTestFunction<R>;
+  afterTest?: PuppeteerAfterTestFunction<R>;
 };
-export type PuppeteerTestFunction<R extends {} = {}> = (
-  data: PuppeteerTestData & R
+export type PuppeteerTestFunction = (data: PuppeteerTestData) => Promise<void>;
+export type PuppeteerAfterTestFunction<R extends {} = never> = (
+  data: PuppeteerAfterTestData<R>
 ) => Promise<void>;
-export type BrowserTestFunction = <R extends {} = {}>(
+export type BrowserTestFunction<R extends {} = {}> = (
   data: BrowserTestData
-) => R | void | Promise<R | void>;
-export type TestCases<R extends {} = {}> = TestDescription<{} & R>[];
-
+) =>
+  | BrowserTestFunctionReturnData<R>
+  | Promise<BrowserTestFunctionReturnData<R>>;
+export type TestCases<R extends {} = never> = TestDescription<{} & R>[];
+export interface BrowserTestFunctionReturnData<R extends {} = never> {
+  buffer: Buffer;
+  data?: R;
+}
 export interface TestPageInfo {
   page: puppeteer.Page;
   canvasHandle: puppeteer.JSHandle<HTMLCanvasElement>;
@@ -53,24 +66,25 @@ export interface TestPageInfo {
 let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 
-function getImageFolderPath(file: string, type: 'expected' | 'exec'): string {
+function getFolderPath(file: string, type: 'expected' | 'exec'): string {
   return join(dirname(file), `__${type}`);
 }
 
-function getImageFilename(
+function getFilename(
   file: string,
-  type: 'expected' | 'exec' | 'diff',
+  type: 'data' | 'expected' | 'diff' | 'exec',
   step: number
 ): string {
+  const ext = type === 'data' ? 'json' : 'png';
   const filename = [
     basename(file).replace(/\.spec\.ts$/g, ''),
-    `${step}${type === 'diff' ? '-diff' : ''}.png`,
+    `${step}${type === 'diff' ? '-diff' : ''}.${ext}`,
   ]
     .join('.')
     .toLowerCase();
 
   return join(
-    getImageFolderPath(file, type === 'diff' ? 'exec' : type),
+    getFolderPath(file, type.includes('exec') ? 'exec' : 'expected'),
     filename
   );
 }
@@ -90,6 +104,8 @@ function getTestFiles(): string[] {
 }
 
 before('set up the browser', async () => {
+  // tslint:disable: no-console
+  console.log(`Launching puppeteer...`);
   const browserOptions: puppeteer.LaunchOptions = {
     devtools: DEBUG_MODE,
   };
@@ -106,7 +122,6 @@ before('set up the browser', async () => {
       timeout: 1000,
     });
   }
-  // tslint:disable-next-line: no-console
   console.log(`Running Visual Regression tests from ${testUrl}\n`);
 });
 
@@ -126,10 +141,12 @@ describe('Visual Regresion Tests', async function() {
         page,
         steps,
         testCase: relativePath.replace(/\.spec\.ts$/g, ''),
-        getImageFilename: getImageFilename.bind(null, file),
+        getFilename: getFilename.bind(null, file),
         preserveImages: PRESERVE_IMAGES,
-        expectedFolderPath: getImageFolderPath(file, 'expected'),
-        execFolderPath: getImageFolderPath(file, 'exec'),
+        expectedFolderPath: getFolderPath(file, 'expected'),
+        execFolderPath: getFolderPath(file, 'exec'),
+        noDataTest: NO_DATA_TEST,
+        noImageTest: NO_IMAGE_TEST,
       });
     });
   });
