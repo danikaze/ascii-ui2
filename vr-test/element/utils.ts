@@ -1,13 +1,5 @@
-import { Tile } from '@src';
 import { Element, ElementOptions } from '@src/element';
-
-export function fillMatrix(matrix: Tile[][], tile: Tile): void {
-  for (const row of matrix) {
-    for (let x = 0; x < row.length; x++) {
-      row[x] = tile;
-    }
-  }
-}
+import { fillMatrix } from '../utils/fill-matrix';
 
 export function createBox(
   color: string,
