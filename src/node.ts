@@ -1,12 +1,19 @@
-export interface Event {
+export interface Event<N extends Node = Node> {
+  target: N;
   stopPropagation: () => void;
   stopImmediatePropagation: () => void;
 }
 
-export type EventHandler = <T extends Event>(event: T) => void;
+export type EventHandler = <T extends Event<N>, N extends Node = Node>(
+  event: T
+) => void;
 
 export interface EventAttached extends Event {
   /** Attached node  */
+  node: Node;
+}
+export interface EventDettached extends Event {
+  /** Dettached node  */
   node: Node;
 }
 export interface EventAdopted extends Event {
@@ -15,10 +22,6 @@ export interface EventAdopted extends Event {
    * (new parent will be already in node.parent)
    */
   oldParent: Node;
-}
-export interface EventDettached extends Event {
-  /* Node that was dettached from the target one */
-  node: Node;
 }
 export interface EventOrphaned extends Event {
   /** Previous parent of the orphaned node */
@@ -163,6 +166,7 @@ export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
       ...data,
       stopPropagation,
       stopImmediatePropagation,
+      target: this,
     };
 
     do {
