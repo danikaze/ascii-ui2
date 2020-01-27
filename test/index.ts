@@ -1,4 +1,5 @@
 import * as puppeteer from 'puppeteer';
+import { Buffer } from '@src/buffer';
 import { basename, dirname, join, relative } from 'path';
 import { describe, before, after } from 'mocha';
 import { getVrTestFiles, VR_TEST_FOLDER } from './utils';
@@ -28,23 +29,33 @@ export interface PuppeteerTestData {
   // need to provide custom implementation because puppeteer's returns null
   getBounds: (elem: puppeteer.JSHandle) => Promise<DOMRectLike>;
 }
+export interface PuppeteerAfterTestData<R extends {} = never>
+  extends PuppeteerTestData {
+  data: R;
+}
 export interface BrowserTestData {
   canvas: HTMLCanvasElement;
 }
-export type TestDescription<R extends {} = {}> = {
+export type TestDescription<R extends {} = never> = {
   description?: string;
   beforeTest?: PuppeteerTestFunction;
-  test: BrowserTestFunction;
-  afterTest?: PuppeteerTestFunction<R>;
+  test: BrowserTestFunction<R>;
+  afterTest?: PuppeteerAfterTestFunction<R>;
 };
-export type PuppeteerTestFunction<R extends {} = {}> = (
-  data: PuppeteerTestData & R
+export type PuppeteerTestFunction = (data: PuppeteerTestData) => Promise<void>;
+export type PuppeteerAfterTestFunction<R extends {} = never> = (
+  data: PuppeteerAfterTestData<R>
 ) => Promise<void>;
-export type BrowserTestFunction = <R extends {} = {}>(
+export type BrowserTestFunction<R extends {} = {}> = (
   data: BrowserTestData
-) => R | void | Promise<R | void>;
-export type TestCases<R extends {} = {}> = TestDescription<{} & R>[];
-
+) =>
+  | BrowserTestFunctionReturnData<R>
+  | Promise<BrowserTestFunctionReturnData<R>>;
+export type TestCases<R extends {} = never> = TestDescription<{} & R>[];
+export interface BrowserTestFunctionReturnData<R extends {} = never> {
+  buffer: Buffer;
+  data?: R;
+}
 export interface TestPageInfo {
   page: puppeteer.Page;
   canvasHandle: puppeteer.JSHandle<HTMLCanvasElement>;

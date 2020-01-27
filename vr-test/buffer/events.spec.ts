@@ -78,6 +78,8 @@ export const data: TestCases<BufferTestInfo> = [
         'focus',
         'blur',
       ].forEach(eventType => buffer.on(eventType, getListener(eventType)));
+
+      return { buffer };
     },
   },
   {
@@ -89,21 +91,17 @@ export const data: TestCases<BufferTestInfo> = [
       buffer.on('mouseup', getListener('mouseup'));
 
       return {
-        bufferWidth: buffer.width,
-        bufferHeight: buffer.height,
-        tileWidth: buffer.tileWidth,
-        tileHeight: buffer.tileHeight,
-      } as BufferTestInfo;
+        buffer,
+        data: {
+          bufferWidth: buffer.width,
+          bufferHeight: buffer.height,
+          tileWidth: buffer.tileWidth,
+          tileHeight: buffer.tileHeight,
+        },
+      };
     },
-    afterTest: async ({
-      page,
-      canvasHandler,
-      getBounds,
-      bufferWidth,
-      bufferHeight,
-      tileWidth,
-      tileHeight,
-    }) => {
+    afterTest: async ({ page, canvasHandler, getBounds, data }) => {
+      const { bufferWidth, bufferHeight, tileWidth, tileHeight } = data;
       const bounds = await getBounds(canvasHandler);
       let nClicks = 0;
 
@@ -197,6 +195,7 @@ export const data: TestCases<BufferTestInfo> = [
       buffer.on('keydown', getListener('keydown'));
       buffer.on('keyup', getListener('keyup'));
       buffer.on('keypress', getListener('keypress'));
+      return { buffer };
     },
     afterTest: async ({ page, canvasHandler }) => {
       await canvasHandler.asElement()!.type('abc');
@@ -265,6 +264,7 @@ export const data: TestCases<BufferTestInfo> = [
       buffer.clearListeners();
       buffer.on('focus', getListener('focus', true));
       buffer.on('blur', getListener('blur', true));
+      return { buffer };
     },
     afterTest: async ({ page, canvasHandler, getBounds }) => {
       const bounds = await getBounds(canvasHandler);

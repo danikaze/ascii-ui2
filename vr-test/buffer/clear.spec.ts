@@ -19,6 +19,8 @@ export const data: TestCases = [
       const buffer = resetBuffer(canvas);
       buffer.clear();
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -27,6 +29,8 @@ export const data: TestCases = [
       const buffer = resetBuffer(canvas);
       buffer.clear(2, 2, 7, 7);
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -35,6 +39,8 @@ export const data: TestCases = [
       const buffer = resetBuffer(canvas);
       buffer.clear(3, -1, 6, 11);
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -43,6 +49,8 @@ export const data: TestCases = [
       const buffer = resetBuffer(canvas);
       buffer.clear(-1, 3, 11, 6);
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -51,6 +59,8 @@ export const data: TestCases = [
       const buffer = resetBuffer(canvas);
       buffer.clear(5, 5, 1, 1);
       buffer.render();
+
+      return { buffer };
     },
   },
 ];

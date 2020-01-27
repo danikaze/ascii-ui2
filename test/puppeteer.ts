@@ -4,10 +4,15 @@ import { relative } from 'path';
 import { sync as rimraf } from 'rimraf';
 import { assert } from 'chai';
 import { sync as mkdirp } from 'mkdirp';
+import {
+  TestCases,
+  PuppeteerTestData,
+  BrowserTestFunctionReturnData,
+  PuppeteerAfterTestData,
+} from '@test';
 import { compareImgs } from './compare-imgs';
 import { TestWindow } from './html';
 import { VR_TEST_FOLDER } from './utils';
-import { TestCases, PuppeteerTestData } from '@test';
 
 export interface VrTestOptions {
   testCase: string;
@@ -68,7 +73,7 @@ export async function runVrTest({
     }
 
     // test, in browser side
-    const browserData = await page.evaluate(
+    const testResult = (await page.evaluate(
       async (testCase, step) => {
         return await ((window as unknown) as TestWindow).loadTest(testCase, {
           step,
@@ -76,7 +81,7 @@ export async function runVrTest({
       },
       testCase,
       s
-    );
+    )) as BrowserTestFunctionReturnData;
 
     allOk = allOk && (await checkBrowserStatus(page, s, getImageFilename));
 
@@ -95,9 +100,9 @@ export async function runVrTest({
     // post-test, in puppeteer side
     if (afterTest) {
       await afterTest({
-        ...browserData,
         ...puppeteerTestData,
-      });
+        data: testResult.data,
+      } as PuppeteerAfterTestData);
     }
   }
 

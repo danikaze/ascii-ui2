@@ -40,6 +40,8 @@ export const data: TestCases = [
     test: ({ canvas }) => {
       resetBuffer(canvas);
       writeAllBuffer(buffer);
+
+      return { buffer };
     },
   },
   {
@@ -53,6 +55,8 @@ export const data: TestCases = [
         row1: buffer.height - 1,
       });
       writeAllBuffer(buffer);
+
+      return { buffer };
     },
   },
   {
@@ -66,6 +70,8 @@ export const data: TestCases = [
         row1: buffer.height - 2,
       });
       writeAllBuffer(buffer);
+
+      return { buffer };
     },
   },
   {
@@ -79,6 +85,8 @@ export const data: TestCases = [
         row1: buffer.height + 2,
       });
       writeAllBuffer(buffer);
+
+      return { buffer };
     },
   },
   {
@@ -93,6 +101,8 @@ export const data: TestCases = [
         row1: buffer.height - 3,
       });
       writeAllBuffer(buffer, { fg: 'red' });
+
+      return { buffer };
     },
   },
   {
@@ -102,6 +112,8 @@ export const data: TestCases = [
       buffer.pushViewport(intersection1);
       writeAllBuffer(buffer, { fg: 'red' });
       buffer.popViewport();
+
+      return { buffer };
     },
   },
   {
@@ -110,6 +122,8 @@ export const data: TestCases = [
       buffer.pushViewport(intersection2);
       writeAllBuffer(buffer, { fg: 'green' });
       buffer.popViewport();
+
+      return { buffer };
     },
   },
   {
@@ -118,6 +132,8 @@ export const data: TestCases = [
       buffer.pushViewport(intersection1);
       buffer.pushViewport(intersection2);
       writeAllBuffer(buffer, { fg: 'yellow' });
+
+      return { buffer };
     },
   },
   {
@@ -125,6 +141,8 @@ export const data: TestCases = [
     test: () => {
       buffer.popViewport();
       writeAllBuffer(buffer, { fg: 'pink' });
+
+      return { buffer };
     },
   },
   {
@@ -135,6 +153,8 @@ export const data: TestCases = [
         v = buffer.popViewport();
       }
       writeAllBuffer(buffer, { fg: 'white' });
+
+      return { buffer };
     },
   },
 ];

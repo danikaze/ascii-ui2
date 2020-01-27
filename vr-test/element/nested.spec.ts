@@ -29,6 +29,8 @@ export const data: TestCases = [
       buffer.append(yellow);
 
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -41,6 +43,8 @@ export const data: TestCases = [
       buffer.append(yellow);
 
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -61,6 +65,8 @@ export const data: TestCases = [
       white.append(lightGreen);
 
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -68,6 +74,8 @@ export const data: TestCases = [
     test: () => {
       green.toggle();
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -75,6 +83,8 @@ export const data: TestCases = [
     test: () => {
       green.toggle();
       buffer.render();
+
+      return { buffer };
     },
   },
 ];

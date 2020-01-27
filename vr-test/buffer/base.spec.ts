@@ -25,12 +25,15 @@ export const data: TestCases = [
       });
 
       writeText(0, 0, 'Hello world!');
+
+      return { buffer };
     },
   },
   {
     description: 'Buffer.render() is called, and text should appear',
     test: () => {
       buffer.render();
+      return { buffer };
     },
   },
   {
@@ -65,6 +68,8 @@ export const data: TestCases = [
       });
 
       buffer.render();
+
+      return { buffer };
     },
   },
   {
@@ -76,6 +81,8 @@ export const data: TestCases = [
       buffer.setTile(buffer.width, 0, { char: 'x' });
       buffer.setTile(0, buffer.height, { char: 'x' });
       buffer.setTile(buffer.width, buffer.height, { char: 'x' });
+
+      return { buffer };
     },
   },
 ];

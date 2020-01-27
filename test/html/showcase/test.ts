@@ -1,6 +1,10 @@
 import * as FontFaceObserver from 'fontfaceobserver';
 import { Buffer } from '@src/buffer';
-import { TestCases, BrowserTestData } from '../../';
+import {
+  TestCases,
+  BrowserTestData,
+  BrowserTestFunctionReturnData,
+} from '../../';
 import { LoadTestOptions } from '..';
 import { setActiveTest } from './sidebar';
 import { initProgressBar, updateProgressBar, setError } from './progress';
@@ -19,7 +23,7 @@ let currentTestCase = '';
 export async function loadTest<R extends {}>(
   testCase: string,
   options: LoadTestOptions = { step: 'all' }
-): Promise<R | void> {
+): Promise<BrowserTestFunctionReturnData<R> | void> {
   /*
    * 1. test loading
    */
@@ -53,7 +57,7 @@ async function executeTest<R extends {}>(
   options: LoadTestOptions = { step: 'all' },
   testName: string,
   data: TestCases
-): Promise<R | void> {
+): Promise<BrowserTestFunctionReturnData<R> | void> {
   /*
    * 2. test preparation
    */
@@ -89,7 +93,7 @@ async function executeTest<R extends {}>(
 
   // run all steps
   if (step === 'all') {
-    let returnData: R | void = undefined;
+    let returnData: BrowserTestFunctionReturnData | void;
     for (let s = 0; s < data.length; s++) {
       returnData = await executeStep(data, s, testData);
     }
@@ -110,7 +114,7 @@ async function executeStep<R>(
   tests: TestCases,
   step: number,
   data: BrowserTestData
-): Promise<R | void> {
+): Promise<BrowserTestFunctionReturnData<R> | void> {
   const testCase = tests[step];
   const errorsElem = document.getElementById('errors')!;
   document.getElementById('description')!.innerText =
@@ -119,7 +123,8 @@ async function executeStep<R>(
 
   try {
     errorsElem.style.display = 'none';
-    return (await testCase.test(data)) as R;
+    const testResult = await testCase.test(data);
+    return (testResult as unknown) as BrowserTestFunctionReturnData;
   } catch (error) {
     setError(step);
     errorsElem.style.display = '';

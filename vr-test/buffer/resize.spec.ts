@@ -13,18 +13,24 @@ export const data: TestCases = [
         cols: 4,
         rows: 4,
       });
+
+      return { buffer };
     },
   },
   {
     description: 'Remove rows',
     test: () => {
       buffer.resize(4, 2);
+
+      return { buffer };
     },
   },
   {
     description: 'Remove columns',
     test: () => {
       buffer.resize(2, 2);
+
+      return { buffer };
     },
   },
   {
@@ -32,6 +38,8 @@ export const data: TestCases = [
     test: () => {
       buffer.setClearStyle({ bg: 'red' });
       buffer.resize(4, 2);
+
+      return { buffer };
     },
   },
   {
@@ -39,6 +47,8 @@ export const data: TestCases = [
     test: () => {
       buffer.setClearStyle({ bg: 'green' });
       buffer.resize(4, 4);
+
+      return { buffer };
     },
   },
   {
@@ -47,6 +57,8 @@ export const data: TestCases = [
       buffer.resize(2, 2);
       buffer.setClearStyle({ bg: 'green' });
       buffer.resize(2, 4);
+
+      return { buffer };
     },
   },
   {
@@ -54,6 +66,8 @@ export const data: TestCases = [
     test: () => {
       buffer.setClearStyle({ bg: 'red' });
       buffer.resize(4, 4);
+
+      return { buffer };
     },
   },
   {
@@ -62,6 +76,8 @@ export const data: TestCases = [
       buffer.setClearStyle({ bg: 'blue' });
       buffer.resize(2, 2);
       buffer.resize(4, 4);
+
+      return { buffer };
     },
   },
 ];
