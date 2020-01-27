@@ -104,6 +104,8 @@ function getTestFiles(): string[] {
 }
 
 before('set up the browser', async () => {
+  // tslint:disable: no-console
+  console.log(`Launching puppeteer...`);
   const browserOptions: puppeteer.LaunchOptions = {
     devtools: DEBUG_MODE,
   };
@@ -120,7 +122,6 @@ before('set up the browser', async () => {
       timeout: 1000,
     });
   }
-  // tslint:disable-next-line: no-console
   console.log(`Running Visual Regression tests from ${testUrl}\n`);
 });
 
