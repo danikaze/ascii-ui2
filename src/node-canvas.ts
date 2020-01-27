@@ -1,19 +1,7 @@
 import { Node } from './node';
+import { MouseEventData, KeyEventData } from './user-input';
 
-interface UserInputEvent {
-  /** `true` if the Shift key was pressed */
-  shiftKey: boolean;
-  /** `true` if the Control key was pressed */
-  ctrlKey: boolean;
-  /** `true` if the Alt key was pressed */
-  altKey: boolean;
-  /** `true` if the Meta key was pressed (Command in Mac) */
-  metaKey: boolean;
-}
-
-export interface BufferMouseEvent extends UserInputEvent {
-  /** Mouse button used in the event */
-  button: number;
+export interface BufferMouseEvent extends MouseEventData {
   /** X-Position (in pixels) of the mouse relative to the buffer */
   x: number;
   /** Y-Position (in pixels) of the mouse relative to the buffer */
@@ -24,17 +12,7 @@ export interface BufferMouseEvent extends UserInputEvent {
   row: number;
 }
 
-export interface BufferKeyEvent extends UserInputEvent {
-  /** Name of the used key (i.e. "a") */
-  key: string;
-  /** Code of the used key (i.e. "KeyA") */
-  code: string;
-  /**
-   * keyCode of the used key (i.e. 65)
-   * Note that keyCode is different in keyup/keydown and keypress events
-   */
-  keyCode: number;
-}
+export type BufferKeyEvent = KeyEventData;
 
 export interface NodeCanvasOptions {
   /** Associated canvas where to listen to */

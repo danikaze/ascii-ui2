@@ -120,6 +120,7 @@
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
-    "extend-objects-only": "^1.0.1"
+    "extend-objects-only": "^1.0.1",
+    "vanilla-type-check": "^2.0.3"
   }
 }
