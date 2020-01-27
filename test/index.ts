@@ -12,6 +12,8 @@ import {
 
 const DEBUG_MODE = process.argv.includes('--debug');
 const PRESERVE_IMAGES = DEBUG_MODE || process.argv.includes('--noRm');
+const NO_IMAGE_TEST = process.argv.includes('--noImage');
+const NO_DATA_TEST = process.argv.includes('--noData');
 
 export interface DOMRectLike {
   x: number;
@@ -64,24 +66,25 @@ export interface TestPageInfo {
 let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 
-function getImageFolderPath(file: string, type: 'expected' | 'exec'): string {
+function getFolderPath(file: string, type: 'expected' | 'exec'): string {
   return join(dirname(file), `__${type}`);
 }
 
-function getImageFilename(
+function getFilename(
   file: string,
-  type: 'expected' | 'exec' | 'diff',
+  type: 'data' | 'expected' | 'diff' | 'exec',
   step: number
 ): string {
+  const ext = type === 'data' ? 'json' : 'png';
   const filename = [
     basename(file).replace(/\.spec\.ts$/g, ''),
-    `${step}${type === 'diff' ? '-diff' : ''}.png`,
+    `${step}${type === 'diff' ? '-diff' : ''}.${ext}`,
   ]
     .join('.')
     .toLowerCase();
 
   return join(
-    getImageFolderPath(file, type === 'diff' ? 'exec' : type),
+    getFolderPath(file, type.includes('exec') ? 'exec' : 'expected'),
     filename
   );
 }
@@ -137,10 +140,12 @@ describe('Visual Regresion Tests', async function() {
         page,
         steps,
         testCase: relativePath.replace(/\.spec\.ts$/g, ''),
-        getImageFilename: getImageFilename.bind(null, file),
+        getFilename: getFilename.bind(null, file),
         preserveImages: PRESERVE_IMAGES,
-        expectedFolderPath: getImageFolderPath(file, 'expected'),
-        execFolderPath: getImageFolderPath(file, 'exec'),
+        expectedFolderPath: getFolderPath(file, 'expected'),
+        execFolderPath: getFolderPath(file, 'exec'),
+        noDataTest: NO_DATA_TEST,
+        noImageTest: NO_IMAGE_TEST,
       });
     });
   });

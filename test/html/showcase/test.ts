@@ -124,7 +124,17 @@ async function executeStep<R>(
   try {
     errorsElem.style.display = 'none';
     const testResult = await testCase.test(data);
-    return (testResult as unknown) as BrowserTestFunctionReturnData;
+    // test only cares about the matrix content of the buffer
+    // and actually, not stripping the buffer, might cause errors
+    // when stringifying the data to return from puppeteer because of
+    // cyclical references
+    return ({
+      ...testResult,
+      buffer: {
+        // tslint:disable-next-line: no-any
+        matrix: (testResult.buffer as any).matrix,
+      },
+    } as unknown) as BrowserTestFunctionReturnData;
   } catch (error) {
     setError(step);
     errorsElem.style.display = '';

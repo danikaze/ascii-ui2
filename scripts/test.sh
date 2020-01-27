@@ -7,6 +7,7 @@ UNIT_TEST_FILES="src/**/__test/**/*.spec.ts"
 NODE_PARAMS=""
 TEST_FILES=""
 TYPE=""
+TEST_PARAMS="--noImage"
 
 while test $# -gt 0
 do
@@ -17,7 +18,8 @@ do
       ;;
     --all) TYPE="VRUT"
        ;;
-    --debug) NODE_PARAMS="${NODE_PARAMS} --inspect-brk"
+    --debug) NODE_PARAMS="${NODE_PARAMS} --inspect-brk";
+             TEST_PARAMS="${TEST_PARAMS} --debug"
        ;;
     --*) echo "Unknown param $1" && exit 1
       ;;
@@ -46,7 +48,7 @@ fi
 
 cd "${PROJECT_ROOT}"
 
-$NYC ${TEST_FILES}
+$NYC ${TEST_FILES} ${TEST_PARAMS}
 EXIT_CODE=$?
 
 cd "${PWD}"
