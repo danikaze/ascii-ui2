@@ -113,41 +113,50 @@ export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
   }
 
   /**
-   * Listen to a type of events
+   * Listen to a type of events.
+   * Accepts several types separated by spaces or commas
    */
-  public on(eventType: string, handler: EventHandler): void {
-    let listeners = this.listeners.get(eventType);
-    if (!listeners) {
-      listeners = [];
-      this.listeners.set(eventType, listeners);
-    }
-    listeners.push(handler);
+  public on(eventTypes: string, handler: EventHandler): void {
+    eventTypes.split(/ +|,+/).forEach(type => {
+      let listeners = this.listeners.get(type);
+      if (!listeners) {
+        listeners = [];
+        this.listeners.set(type, listeners);
+      }
+      listeners.push(handler);
+    });
   }
 
   /**
-   * Removes an even listener
-   * If not found, does nothing
+   * Removes an even listener.
+   * If not found, does nothing.
+   * Accepts several types separated by spaces or commas
    */
-  public off(eventType: string, handler: EventHandler): void {
-    const listeners = this.listeners.get(eventType);
-    if (!listeners) return;
+  public off(eventTypes: string, handler: EventHandler): void {
+    eventTypes.split(/ +,+/).forEach(type => {
+      const listeners = this.listeners.get(type);
+      if (!listeners) return;
 
-    const i = listeners.indexOf(handler);
-    if (i === -1) return;
+      const i = listeners.indexOf(handler);
+      if (i === -1) return;
 
-    listeners.splice(i, 1);
+      listeners.splice(i, 1);
+    });
   }
 
   /**
-   * Remove all registered listeners if the specified event type
-   * If the eventType is not specified, it will remove all of them
+   * Remove all registered listeners if the specified event type.
+   * If the eventType is not specified, it will remove all of them.
+   * Accepts several types separated by spaces or commas
    */
-  public clearListeners(eventType?: string): void {
-    if (!eventType) {
+  public clearListeners(eventTypes?: string): void {
+    if (!eventTypes) {
       return this.listeners.clear();
     }
 
-    this.listeners.delete(eventType);
+    eventTypes.split(/ +,+/).forEach(type => {
+      this.listeners.delete(type);
+    });
   }
 
   /**
