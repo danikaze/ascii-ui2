@@ -12,7 +12,10 @@ export type EventMove = Event;
  */
 export type EventResize = Event;
 
-export interface ElementOptions extends NodeOptions<Element, Element> {
+export interface ElementOptions<
+  C extends Element = Element,
+  P extends Element = Element
+> extends NodeOptions<C, P> {
   /** Column relative to its parent position */
   x?: number;
   /** Row relative to its parent position */
@@ -25,7 +28,10 @@ export interface ElementOptions extends NodeOptions<Element, Element> {
   visible?: boolean;
 }
 
-export class Element extends Node<Element, Element> {
+export class Element<
+  C extends Element = BasicElement,
+  P extends Element = BasicElement
+> extends Node<C, P> {
   /** Content of the element to be rendered */
   protected readonly content: Tile[][] = [];
   /** Position of the element in columns relative to its parent */
@@ -43,7 +49,7 @@ export class Element extends Node<Element, Element> {
   /** Associated buffer (needed for clearing the element area) */
   private buffer?: Buffer;
 
-  constructor(options: ElementOptions = {}) {
+  constructor(options: ElementOptions<C, P> = {}) {
     super(options);
 
     this.x = options.x || 0;
@@ -261,3 +267,5 @@ export class Element extends Node<Element, Element> {
     }
   }
 }
+
+interface BasicElement extends Element<BasicElement, BasicElement> {}

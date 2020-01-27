@@ -28,7 +28,7 @@ export interface EventOrphaned extends Event {
   oldParent: Node;
 }
 
-export interface NodeOptions<C extends Node, P extends Node> {
+export interface NodeOptions<C extends Node = Node, P extends Node = Node> {
   /** If specified, the new node will be attached to the parent in the constructor */
   parent?: P;
   /** If specified, the list of children will be attached to the node in the constructor */
@@ -184,4 +184,4 @@ export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
   }
 }
 
-class BasicNode extends Node<BasicNode, BasicNode> {}
+interface BasicNode extends Node<BasicNode, BasicNode> {}

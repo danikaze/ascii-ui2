@@ -50,7 +50,7 @@ interface FriendElement {
 /**
  * Low level interface for controlling the canvas output
  */
-export class Buffer extends NodeCanvas<Element, never> {
+export class Buffer<C extends Element = Element> extends NodeCanvas<C, never> {
   public static readonly defaultOptions: Omit<BufferOptions, 'canvas'> = {
     tileWidth: 12,
     tileHeight: 16,
