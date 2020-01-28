@@ -10,6 +10,7 @@ let white: ColorBox;
 let lightGreen: ColorBox;
 
 function resetBuffer(canvas: HTMLCanvasElement) {
+  buffer?.clearInputEventListeners();
   buffer = new Buffer({
     canvas,
     cols: 16,

@@ -15,7 +15,7 @@ export interface BufferMouseEvent extends MouseEventData {
 export type BufferKeyEvent = KeyEventData;
 
 export interface InputEventListenerOptions {
-  /** Associated canvas where to listen to */
+  /** Associated element where to listen to */
   eventTarget: HTMLElement;
   /**
    * Prevents default on captured events (i.e. TAB will change the focus of the window)
@@ -44,41 +44,73 @@ type MouseEventTypes =
   | 'mouseup';
 type KeyEventTypes = 'keydown' | 'keyup' | 'keypress';
 type NoDataEventTypes = 'focus' | 'blur';
-
+type EventTypes = MouseEventTypes | KeyEventTypes | NoDataEventTypes;
 /**
  * Special type of Node that handles the events of the top level,
- * catching key, mouse... type of events directly from the canvas
+ * catching key, mouse... type of events directly from the specified HTML Element
  */
 export class InputEventListener<C extends Node, P extends Node> extends Node<
   C,
   P
 > {
+  /** Needed to keep track of the used listeners, so they can be removed later */
+  private readonly attachedListeners: [EventTypes, Function][] = [];
+  /** HTML Element where the event handlers are listening to */
+  private readonly eventTarget: HTMLElement;
+
   constructor(options: InputEventListenerOptions) {
     super();
 
-    const {
-      eventTarget,
-      tileWidth,
-      tileHeight,
-      eventPreventDefault,
-      eventStopPropagation,
-    } = options;
+    this.eventTarget = options.eventTarget;
+    this.eventTarget.setAttribute('tabindex', '0');
+    this.eventTarget.focus();
 
-    const handleMouseEvent = this.handleMouseEvent.bind(
-      this,
-      tileWidth,
-      tileHeight,
-      eventPreventDefault !== false,
-      eventStopPropagation === true
-    );
-    const handleKeyEvent = this.handleKeyEvent.bind(
-      this,
-      eventPreventDefault !== false,
-      eventStopPropagation === true
-    );
+    this.handleMouseEvent = this.handleMouseEvent.bind(this);
+    this.handleKeyEvent = this.handleKeyEvent.bind(this);
+    this.handleNoDataEvents = this.handleNoDataEvents.bind(this);
 
-    eventTarget.setAttribute('tabindex', '0');
-    eventTarget.focus();
+    this.registerInputEventListeners(
+      options.tileWidth,
+      options.tileHeight,
+      options.eventPreventDefault !== false,
+      options.eventStopPropagation === true
+    );
+  }
+
+  /**
+   * Clear all the registered user-input event listeners to the target element
+   */
+  public clearInputEventListeners(): void {
+    const { attachedListeners } = this;
+    for (const [type, listener] of attachedListeners) {
+      // tslint:disable-next-line: no-any
+      this.eventTarget.removeEventListener(type, listener as any);
+    }
+    attachedListeners.splice(0, attachedListeners.length);
+  }
+
+  /**
+   * Register one user-input event listener
+   */
+  private registerInputEventListener<K extends EventTypes>(
+    type: K,
+    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void
+  ): void {
+    this.eventTarget.addEventListener(type, listener);
+    this.attachedListeners.push([type, listener]);
+  }
+
+  /**
+   * Register user-input event listeners to the passed target element
+   * It clears the previous registered ones so there are no duplicated listeners
+   */
+  private registerInputEventListeners(
+    tileWidth: number,
+    tileHeight: number,
+    preventDefault: boolean,
+    stopPropagation: boolean
+  ): void {
+    this.clearInputEventListeners();
 
     // register mouse events
     const mouseEvents = [
@@ -92,17 +124,30 @@ export class InputEventListener<C extends Node, P extends Node> extends Node<
       'mouseup',
     ] as const;
     for (const type of mouseEvents) {
-      eventTarget.addEventListener(type, handleMouseEvent.bind(this, type));
+      // WHY typescript complains if I try a binding like with the key events? Q.Q
+      this.registerInputEventListener(type, event => {
+        this.handleMouseEvent(
+          tileWidth,
+          tileHeight,
+          preventDefault,
+          stopPropagation,
+          type,
+          event
+        );
+      });
     }
 
     // register key events
     for (const type of ['keydown', 'keyup', 'keypress'] as const) {
-      eventTarget.addEventListener(type, handleKeyEvent.bind(this, type));
+      this.registerInputEventListener(
+        type,
+        this.handleKeyEvent.bind(this, preventDefault, stopPropagation, type)
+      );
     }
 
-    // blur, focus
+    // register blur, focus
     for (const type of ['blur', 'focus'] as const) {
-      eventTarget.addEventListener(
+      this.registerInputEventListener(
         type,
         this.handleNoDataEvents.bind(this, type)
       );
@@ -120,7 +165,8 @@ export class InputEventListener<C extends Node, P extends Node> extends Node<
     type: MouseEventTypes,
     event: MouseEvent
   ): void {
-    // preventDefault && event.preventDefault(); // if mouse events prevent defaults, can't get the focus
+    // if mouse events prevent defaults, can't get the focus clicking in the element
+    // preventDefault && event.preventDefault();
     stopPropagation && event.stopPropagation();
 
     const param = {
