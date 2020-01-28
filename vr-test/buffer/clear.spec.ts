@@ -27,6 +27,11 @@ export const data: TestCases = [
     description: 'Clear center',
     test: ({ canvas }) => {
       const buffer = resetBuffer(canvas);
+      buffer.setClearStyle({
+        char: ' ',
+        // assigning undefined should not change the value
+        bg: undefined,
+      });
       buffer.clear(2, 2, 7, 7);
       buffer.render();
 
