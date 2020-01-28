@@ -24,9 +24,6 @@ export async function loadTest<R extends {}>(
   testCase: string,
   options: LoadTestOptions = { step: 'all' }
 ): Promise<BrowserTestFunctionReturnData<R> | void> {
-  /*
-   * 1. test loading
-   */
   let data: TestCases;
   const testName = testCase.replace(/\\/g, '/');
   try {
@@ -49,21 +46,33 @@ export async function loadTest<R extends {}>(
   Buffer.defaultOptions.clearStyle.font = '22px Fixedsys';
 
   const font = new FontFaceObserver('Fixedsys');
-  return font.load().then(() => executeTest(testCase, options, testName, data));
+  return font.load().then(() => {
+    const step = options.step!;
+    if (step === 'none' || step === 'all' || step < 0 || step >= data.length) {
+      resetCanvas();
+    }
+    if (options.step !== 'none') {
+      prepareTest(testCase, data.length);
+      return executeTest(options, data);
+    }
+  });
 }
 
-async function executeTest<R extends {}>(
-  testCase: string,
-  options: LoadTestOptions = { step: 'all' },
-  testName: string,
-  data: TestCases
-): Promise<BrowserTestFunctionReturnData<R> | void> {
-  /*
-   * 2. test preparation
-   */
-  const nSteps = data.length;
-  const { step } = options as Required<LoadTestOptions>;
-  let canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
+/**
+ * Replace the canvas for a new one
+ */
+export function resetCanvas(): void {
+  const canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
+  const newCanvas = document.createElement('canvas');
+  canvas.parentElement!.appendChild(newCanvas);
+  canvas.parentElement!.removeChild(canvas);
+}
+
+/*
+ * Test preparation
+ */
+function prepareTest(testCase: string, nSteps: number): void {
+  const testName = testCase.replace(/\\/g, '/');
 
   // select the active element in the index
   setActiveTest(testName);
@@ -76,19 +85,19 @@ async function executeTest<R extends {}>(
     initProgressBar(testCase, nSteps);
   }
   currentTestCase = testCase;
+}
 
-  // resizing the canvas will reset it
-  if (step === 'all' || step <= 0 || step >= nSteps) {
-    canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
-    // create a new canvas just to get the default size ^^;
-    const temp = document.createElement('canvas');
-    canvas.width = temp.width;
-    canvas.height = temp.height;
-  }
+/*
+ * Test execution
+ */
+async function executeTest<R extends {}>(
+  options: LoadTestOptions = { step: 'all' },
+  data: TestCases
+): Promise<BrowserTestFunctionReturnData<R> | void> {
+  const { step } = options as Required<LoadTestOptions>;
+  if (step === 'none') return;
 
-  /*
-   * 3. test execution
-   */
+  const canvas = document.querySelector<HTMLCanvasElement>('#test canvas')!;
   const testData = { canvas };
 
   // run all steps

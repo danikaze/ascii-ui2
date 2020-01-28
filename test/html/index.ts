@@ -1,10 +1,10 @@
 import { BrowserTestFunctionReturnData } from '@test';
 import { initSidebar } from './showcase/sidebar';
-import { loadTest } from './showcase/test';
+import { loadTest, resetCanvas } from './showcase/test';
 import { initFilter } from './showcase/filter';
 
 export interface LoadTestOptions {
-  step?: number | 'all';
+  step?: number | 'all' | 'none';
 }
 
 export interface TestWindow extends Window {
@@ -12,6 +12,7 @@ export interface TestWindow extends Window {
     testCase: string,
     options?: LoadTestOptions
   ) => Promise<BrowserTestFunctionReturnData<R> | void>;
+  resetCanvas: () => void;
 }
 
 export function initPage() {
@@ -31,6 +32,7 @@ export function initPage() {
   });
 
   ((window as unknown) as TestWindow).loadTest = loadTest;
+  ((window as unknown) as TestWindow).resetCanvas = resetCanvas;
 }
 
 initPage();

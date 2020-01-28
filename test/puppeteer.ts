@@ -73,9 +73,24 @@ export async function runVrTest({
     },
   };
 
+  // prepare the page before the test
+  await page.evaluate(
+    async (testCase, testOptions) => {
+      return await ((window as unknown) as TestWindow).loadTest(
+        testCase,
+        testOptions
+      );
+    },
+    testCase,
+    { step: 'none' }
+  );
+
   // execute all the test steps of the test case
   for (let s = 0; s < steps.length; s++) {
     const { beforeTest, afterTest } = steps[s];
+    const testOptions = { step: s };
+
+    puppeteerTestData.canvasHandler = await getPageCanvasHandler(page);
 
     // pre-test, in puppeteer side
     if (beforeTest) {
@@ -84,13 +99,14 @@ export async function runVrTest({
 
     // test, in browser side
     const testResult = (await page.evaluate(
-      async (testCase, step) => {
-        return await ((window as unknown) as TestWindow).loadTest(testCase, {
-          step,
-        });
+      async (testCase, testOptions) => {
+        return await ((window as unknown) as TestWindow).loadTest(
+          testCase,
+          testOptions
+        );
       },
       testCase,
-      s
+      testOptions
     )) as BrowserTestFunctionReturnData;
 
     if (!testResult || !testResult.buffer) {
