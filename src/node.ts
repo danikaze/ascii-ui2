@@ -1,12 +1,19 @@
-export interface Event {
+export interface Event<N extends Node = Node> {
+  target: N;
   stopPropagation: () => void;
   stopImmediatePropagation: () => void;
 }
 
-export type EventHandler = <T extends Event>(event: T) => void;
+export type EventHandler = <T extends Event<N>, N extends Node = Node>(
+  event: T
+) => void;
 
 export interface EventAttached extends Event {
   /** Attached node  */
+  node: Node;
+}
+export interface EventDettached extends Event {
+  /** Dettached node  */
   node: Node;
 }
 export interface EventAdopted extends Event {
@@ -16,16 +23,12 @@ export interface EventAdopted extends Event {
    */
   oldParent: Node;
 }
-export interface EventDettached extends Event {
-  /* Node that was dettached from the target one */
-  node: Node;
-}
 export interface EventOrphaned extends Event {
   /** Previous parent of the orphaned node */
   oldParent: Node;
 }
 
-export interface NodeOptions<C extends Node, P extends Node> {
+export interface NodeOptions<C extends Node = Node, P extends Node = Node> {
   /** If specified, the new node will be attached to the parent in the constructor */
   parent?: P;
   /** If specified, the list of children will be attached to the node in the constructor */
@@ -110,41 +113,50 @@ export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
   }
 
   /**
-   * Listen to a type of events
+   * Listen to a type of events.
+   * Accepts several types separated by spaces or commas
    */
-  public on(eventType: string, handler: EventHandler): void {
-    let listeners = this.listeners.get(eventType);
-    if (!listeners) {
-      listeners = [];
-      this.listeners.set(eventType, listeners);
-    }
-    listeners.push(handler);
+  public on(eventTypes: string, handler: EventHandler): void {
+    eventTypes.split(/ +|,+/).forEach(type => {
+      let listeners = this.listeners.get(type);
+      if (!listeners) {
+        listeners = [];
+        this.listeners.set(type, listeners);
+      }
+      listeners.push(handler);
+    });
   }
 
   /**
-   * Removes an even listener
-   * If not found, does nothing
+   * Removes an even listener.
+   * If not found, does nothing.
+   * Accepts several types separated by spaces or commas
    */
-  public off(eventType: string, handler: EventHandler): void {
-    const listeners = this.listeners.get(eventType);
-    if (!listeners) return;
+  public off(eventTypes: string, handler: EventHandler): void {
+    eventTypes.split(/ +,+/).forEach(type => {
+      const listeners = this.listeners.get(type);
+      if (!listeners) return;
 
-    const i = listeners.indexOf(handler);
-    if (i === -1) return;
+      const i = listeners.indexOf(handler);
+      if (i === -1) return;
 
-    listeners.splice(i, 1);
+      listeners.splice(i, 1);
+    });
   }
 
   /**
-   * Remove all registered listeners if the specified event type
-   * If the eventType is not specified, it will remove all of them
+   * Remove all registered listeners if the specified event type.
+   * If the eventType is not specified, it will remove all of them.
+   * Accepts several types separated by spaces or commas
    */
-  public clearListeners(eventType?: string): void {
-    if (!eventType) {
+  public clearListeners(eventTypes?: string): void {
+    if (!eventTypes) {
       return this.listeners.clear();
     }
 
-    this.listeners.delete(eventType);
+    eventTypes.split(/ +,+/).forEach(type => {
+      this.listeners.delete(type);
+    });
   }
 
   /**
@@ -163,6 +175,7 @@ export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
       ...data,
       stopPropagation,
       stopImmediatePropagation,
+      target: this,
     };
 
     do {
@@ -180,4 +193,4 @@ export class Node<C extends Node = BasicNode, P extends Node = BasicNode> {
   }
 }
 
-class BasicNode extends Node<BasicNode, BasicNode> {}
+interface BasicNode extends Node<BasicNode, BasicNode> {}
