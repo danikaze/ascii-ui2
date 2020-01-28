@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import { assert } from 'chai';
 import { Buffer } from '@src/buffer';
 import { TestCases, TestDescription } from '@test';
-import { BufferKeyEvent, BufferMouseEvent } from '@src/node-canvas';
+import { BufferKeyEvent, BufferMouseEvent } from '@src/input-event-listener';
 
 type EventHandlerSpy = sinon.SinonSpy<unknown[], void>;
 interface EventTestWindow extends Window {

@@ -1,17 +1,16 @@
 import { extendObjectsOnly } from 'extend-objects-only';
 import { Tile, Viewport } from '@src';
-import { NodeCanvas } from './node-canvas';
+import {
+  InputEventListener,
+  InputEventListenerOptions,
+} from './input-event-listener';
 import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
 import { Element } from './element';
 
-export interface BufferOptions {
+export interface BufferOptions extends InputEventListenerOptions {
   /** Associated canvas element where the buffer will be rendered */
   canvas: HTMLCanvasElement;
-  /** Width of one tile, in pixels */
-  tileWidth: number;
-  /** Height of one tile, in pixels */
-  tileHeight: number;
   /** Number of columns of the buffer */
   cols: number;
   /** Number of rows of the buffer */
@@ -50,8 +49,14 @@ interface FriendElement {
 /**
  * Low level interface for controlling the canvas output
  */
-export class Buffer<C extends Element = Element> extends NodeCanvas<C, never> {
-  public static readonly defaultOptions: Omit<BufferOptions, 'canvas'> = {
+export class Buffer<C extends Element = Element> extends InputEventListener<
+  C,
+  never
+> {
+  public static readonly defaultOptions: Omit<
+    BufferOptions,
+    'canvas' | 'eventTarget'
+  > = {
     tileWidth: 12,
     tileHeight: 16,
     cols: 40,
@@ -96,7 +101,7 @@ export class Buffer<C extends Element = Element> extends NodeCanvas<C, never> {
 
   constructor(options: Partial<BufferOptions> & Pick<BufferOptions, 'canvas'>) {
     super({
-      canvas: options.canvas,
+      eventTarget: options.eventTarget || options.canvas,
       tileWidth: options.tileWidth || Buffer.defaultOptions.tileWidth,
       tileHeight: options.tileHeight || Buffer.defaultOptions.tileHeight,
     });

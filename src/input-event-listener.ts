@@ -14,9 +14,9 @@ export interface BufferMouseEvent extends MouseEventData {
 
 export type BufferKeyEvent = KeyEventData;
 
-export interface NodeCanvasOptions {
+export interface InputEventListenerOptions {
   /** Associated canvas where to listen to */
-  canvas: HTMLCanvasElement;
+  eventTarget: HTMLElement;
   /** Width of a tile (needed to calculate columns in mouse events) */
   tileWidth: number;
   /** Height of a tile (needed to calculate rows in mouse events) */
@@ -39,59 +39,74 @@ type NoDataEventTypes = 'focus' | 'blur';
  * Special type of Node that handles the events of the top level,
  * catching key, mouse... type of events directly from the canvas
  */
-export class NodeCanvas<C extends Node, P extends Node> extends Node<C, P> {
-  constructor(options: NodeCanvasOptions) {
+export class InputEventListener<C extends Node, P extends Node> extends Node<
+  C,
+  P
+> {
+  constructor(options: InputEventListenerOptions) {
     super();
 
-    const { canvas, tileWidth, tileHeight } = options;
+    const { eventTarget, tileWidth, tileHeight } = options;
     const handleMouseEvent = this.handleMouseEvent.bind(
       this,
       tileWidth,
       tileHeight
     );
 
-    canvas.setAttribute('tabindex', '0');
-    canvas.focus();
+    eventTarget.setAttribute('tabindex', '0');
+    eventTarget.focus();
 
     // register mouse events
-    canvas.addEventListener('click', handleMouseEvent.bind(this, 'click'));
-    canvas.addEventListener(
+    eventTarget.addEventListener('click', handleMouseEvent.bind(this, 'click'));
+    eventTarget.addEventListener(
       'mousedown',
       handleMouseEvent.bind(this, 'mousedown')
     );
-    canvas.addEventListener(
+    eventTarget.addEventListener(
       'mouseenter',
       handleMouseEvent.bind(this, 'mouseenter')
     );
-    canvas.addEventListener(
+    eventTarget.addEventListener(
       'mouseleave',
       handleMouseEvent.bind(this, 'mouseleave')
     );
-    canvas.addEventListener(
+    eventTarget.addEventListener(
       'mousemove',
       handleMouseEvent.bind(this, 'mousemove')
     );
-    canvas.addEventListener(
+    eventTarget.addEventListener(
       'mouseout',
       handleMouseEvent.bind(this, 'mouseout')
     );
-    canvas.addEventListener(
+    eventTarget.addEventListener(
       'mouseover',
       handleMouseEvent.bind(this, 'mouseover')
     );
-    canvas.addEventListener('mouseup', handleMouseEvent.bind(this, 'mouseup'));
+    eventTarget.addEventListener(
+      'mouseup',
+      handleMouseEvent.bind(this, 'mouseup')
+    );
 
     // register key events
-    canvas.addEventListener('keydown', this.handleKeys.bind(this, 'keydown'));
-    canvas.addEventListener('keyup', this.handleKeys.bind(this, 'keyup'));
-    canvas.addEventListener('keypress', this.handleKeys.bind(this, 'keypress'));
+    eventTarget.addEventListener(
+      'keydown',
+      this.handleKeys.bind(this, 'keydown')
+    );
+    eventTarget.addEventListener('keyup', this.handleKeys.bind(this, 'keyup'));
+    eventTarget.addEventListener(
+      'keypress',
+      this.handleKeys.bind(this, 'keypress')
+    );
 
     // blur, focus
-    canvas.addEventListener(
+    eventTarget.addEventListener(
       'focus',
       this.handleNoDataEvents.bind(this, 'focus')
     );
-    canvas.addEventListener('blur', this.handleNoDataEvents.bind(this, 'blur'));
+    eventTarget.addEventListener(
+      'blur',
+      this.handleNoDataEvents.bind(this, 'blur')
+    );
   }
 
   /**
