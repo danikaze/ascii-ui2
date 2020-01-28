@@ -102,6 +102,8 @@ export class Buffer<C extends Element = Element> extends InputEventListener<
   constructor(options: Partial<BufferOptions> & Pick<BufferOptions, 'canvas'>) {
     super({
       eventTarget: options.eventTarget || options.canvas,
+      eventPreventDefault: options.eventPreventDefault,
+      eventStopPropagation: options.eventStopPropagation,
       tileWidth: options.tileWidth || Buffer.defaultOptions.tileWidth,
       tileHeight: options.tileHeight || Buffer.defaultOptions.tileHeight,
     });

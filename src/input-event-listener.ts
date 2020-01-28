@@ -17,6 +17,16 @@ export type BufferKeyEvent = KeyEventData;
 export interface InputEventListenerOptions {
   /** Associated canvas where to listen to */
   eventTarget: HTMLElement;
+  /**
+   * Prevents default on captured events (i.e. TAB will change the focus of the window)
+   * Defaults to `true`
+   */
+  eventPreventDefault?: boolean;
+  /**
+   * Prevents propagation on captured events to avoid parents to receive them
+   * Defaults to 'false
+   */
+  eventStopPropagation?: boolean;
   /** Width of a tile (needed to calculate columns in mouse events) */
   tileWidth: number;
   /** Height of a tile (needed to calculate rows in mouse events) */
@@ -46,67 +56,57 @@ export class InputEventListener<C extends Node, P extends Node> extends Node<
   constructor(options: InputEventListenerOptions) {
     super();
 
-    const { eventTarget, tileWidth, tileHeight } = options;
+    const {
+      eventTarget,
+      tileWidth,
+      tileHeight,
+      eventPreventDefault,
+      eventStopPropagation,
+    } = options;
+
     const handleMouseEvent = this.handleMouseEvent.bind(
       this,
       tileWidth,
-      tileHeight
+      tileHeight,
+      eventPreventDefault !== false,
+      eventStopPropagation === true
+    );
+    const handleKeyEvent = this.handleKeyEvent.bind(
+      this,
+      eventPreventDefault !== false,
+      eventStopPropagation === true
     );
 
     eventTarget.setAttribute('tabindex', '0');
     eventTarget.focus();
 
     // register mouse events
-    eventTarget.addEventListener('click', handleMouseEvent.bind(this, 'click'));
-    eventTarget.addEventListener(
+    const mouseEvents = [
+      'click',
       'mousedown',
-      handleMouseEvent.bind(this, 'mousedown')
-    );
-    eventTarget.addEventListener(
       'mouseenter',
-      handleMouseEvent.bind(this, 'mouseenter')
-    );
-    eventTarget.addEventListener(
       'mouseleave',
-      handleMouseEvent.bind(this, 'mouseleave')
-    );
-    eventTarget.addEventListener(
       'mousemove',
-      handleMouseEvent.bind(this, 'mousemove')
-    );
-    eventTarget.addEventListener(
       'mouseout',
-      handleMouseEvent.bind(this, 'mouseout')
-    );
-    eventTarget.addEventListener(
       'mouseover',
-      handleMouseEvent.bind(this, 'mouseover')
-    );
-    eventTarget.addEventListener(
       'mouseup',
-      handleMouseEvent.bind(this, 'mouseup')
-    );
+    ] as const;
+    for (const type of mouseEvents) {
+      eventTarget.addEventListener(type, handleMouseEvent.bind(this, type));
+    }
 
     // register key events
-    eventTarget.addEventListener(
-      'keydown',
-      this.handleKeys.bind(this, 'keydown')
-    );
-    eventTarget.addEventListener('keyup', this.handleKeys.bind(this, 'keyup'));
-    eventTarget.addEventListener(
-      'keypress',
-      this.handleKeys.bind(this, 'keypress')
-    );
+    for (const type of ['keydown', 'keyup', 'keypress'] as const) {
+      eventTarget.addEventListener(type, handleKeyEvent.bind(this, type));
+    }
 
     // blur, focus
-    eventTarget.addEventListener(
-      'focus',
-      this.handleNoDataEvents.bind(this, 'focus')
-    );
-    eventTarget.addEventListener(
-      'blur',
-      this.handleNoDataEvents.bind(this, 'blur')
-    );
+    for (const type of ['blur', 'focus'] as const) {
+      eventTarget.addEventListener(
+        type,
+        this.handleNoDataEvents.bind(this, type)
+      );
+    }
   }
 
   /**
@@ -115,9 +115,14 @@ export class InputEventListener<C extends Node, P extends Node> extends Node<
   private handleMouseEvent(
     tileWidth: number,
     tileHeight: number,
+    preventDefault: boolean,
+    stopPropagation: boolean,
     type: MouseEventTypes,
     event: MouseEvent
   ): void {
+    // preventDefault && event.preventDefault(); // if mouse events prevent defaults, can't get the focus
+    stopPropagation && event.stopPropagation();
+
     const param = {
       button: event.button,
       x: event.offsetX,
@@ -135,7 +140,15 @@ export class InputEventListener<C extends Node, P extends Node> extends Node<
   /**
    * Emit key events
    */
-  private handleKeys(type: KeyEventTypes, event: KeyboardEvent): void {
+  private handleKeyEvent(
+    preventDefault: boolean,
+    stopPropagation: boolean,
+    type: KeyEventTypes,
+    event: KeyboardEvent
+  ): void {
+    preventDefault && event.preventDefault();
+    stopPropagation && event.stopPropagation();
+
     const param = {
       shiftKey: event.shiftKey,
       ctrlKey: event.ctrlKey,

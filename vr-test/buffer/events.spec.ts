@@ -61,6 +61,8 @@ export const data: TestCases<BufferTestInfo> = [
         canvas,
         cols: 5,
         rows: 5,
+        // looks like puppeteer can't capture events (?) and test fail if true
+        eventPreventDefault: false,
       });
 
       [
