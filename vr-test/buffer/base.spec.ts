@@ -73,6 +73,18 @@ export const data: TestCases = [
     },
   },
   {
+    description: 'Undefined should not change values of the properties',
+    test: () => {
+      // tslint:disable: no-magic-numbers
+      const y = 1;
+      buffer.setTile(buffer.width - 4, y, { char: '.', bg: undefined });
+      buffer.setTile(buffer.width - 2, y, { char: '.', fg: undefined });
+      buffer.render();
+
+      return { buffer };
+    },
+  },
+  {
     description: 'Should not fail even writing outside the buffer',
     test: () => {
       buffer.setTile(-1, 0, { char: 'x' });

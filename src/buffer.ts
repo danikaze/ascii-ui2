@@ -182,7 +182,9 @@ export class Buffer extends NodeCanvas<Element, never> {
    * Set the style to use in subsecuent clear calls (and resize)
    */
   public setClearStyle(style: Tile): void {
-    Object.assign(this.clearStyle, style);
+    // extendObjectsOnly instead of Object.assign so `undefined`
+    // properties do not overwrite the previous value
+    extendObjectsOnly(this.clearStyle, style);
   }
 
   /**
@@ -315,6 +317,7 @@ export class Buffer extends NodeCanvas<Element, never> {
     for (let y = yStart; y <= yEnd; y++) {
       const row = matrix[y];
       for (let x = xStart; x <= xEnd; x++) {
+        // Object.assign is ok because clearStyle has no `undefined` members
         Object.assign(row[x].tile, this.clearStyle);
         this.dirtyCells.push(row[x]);
       }
@@ -343,7 +346,6 @@ export class Buffer extends NodeCanvas<Element, never> {
    * - Avoiding adding duplicated dirty tiles
    */
   protected assignCellContents(cell: Cell, tile: Tile): void {
-    let change = false;
     const oldTile = cell.tile;
     // comparison done manually because if done with Object.keys + loop is
     // slower than not applying the performance improvement
@@ -351,18 +353,21 @@ export class Buffer extends NodeCanvas<Element, never> {
     // it doesn't become a huge improvement
     // TODO: Test with bigger/real data
     if (
-      (tile.char !== undefined && tile.char !== oldTile.char) ||
-      (tile.font !== undefined && tile.font !== oldTile.font) ||
-      (tile.offsetX !== undefined && tile.offsetX !== oldTile.offsetX) ||
-      (tile.offsetY !== undefined && tile.offsetY !== oldTile.offsetY) ||
-      (tile.fg !== undefined && tile.fg !== oldTile.fg) ||
-      (tile.bg !== undefined && tile.bg !== oldTile.bg)
+      !(
+        (tile.char !== undefined && tile.char !== oldTile.char) ||
+        (tile.font !== undefined && tile.font !== oldTile.font) ||
+        (tile.offsetX !== undefined && tile.offsetX !== oldTile.offsetX) ||
+        (tile.offsetY !== undefined && tile.offsetY !== oldTile.offsetY) ||
+        (tile.fg !== undefined && tile.fg !== oldTile.fg) ||
+        (tile.bg !== undefined && tile.bg !== oldTile.bg)
+      )
     ) {
-      change = true;
+      return;
     }
-    if (!change) return;
 
-    Object.assign(cell.tile, tile);
+    // extendObjectsOnly instead of Object.assign so `undefined`
+    // properties do not overwrite the previous value
+    extendObjectsOnly(cell.tile, tile);
     if (!this.dirtyCells.includes(cell)) {
       this.dirtyCells.push(cell);
     }
