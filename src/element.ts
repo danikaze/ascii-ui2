@@ -1,12 +1,15 @@
 import { Tile, Viewport } from '@src';
-import { Node, NodeOptions, EventHandler, EventAdopted, Event } from './node';
+import {
+  Node,
+  NodeOptions,
+  EventHandler,
+  EventAdopted,
+  Event,
+  EventOrphaned,
+} from './node';
 import { Buffer } from './buffer';
 import { resizeMatrix } from './util/resize-matrix';
 
-/**
- * Event emmited to each children of the Element, when the element is moved
- */
-export type EventMove = Event;
 /**
  * Event emmited to itself, when the element is resized
  */
@@ -58,12 +61,10 @@ export class Element<
     this.height = options.height || 0;
     this.visible = options.visible !== false;
 
-    this.recalculateCoords = this.recalculateCoords.bind(this);
     this.onAdopt = this.onAdopt.bind(this);
     this.onOrphan = this.onOrphan.bind(this);
     this.on('adopt', this.onAdopt as EventHandler);
-    this.on('orphan', this.onOrphan);
-    this.on('move', this.recalculateCoords as EventHandler);
+    this.on('orphan', this.onOrphan as EventHandler);
     this.recalculateCoords();
     resizeMatrix(this.content, this.width, this.height, {});
   }
@@ -225,15 +226,16 @@ export class Element<
       this.parent instanceof Buffer ? this.parent : this.parent!.buffer
     );
     this.recalculateCoords();
-    event.stopPropagation();
+    event.stopImmediatePropagation();
   }
 
   /**
    * Handler called when this Element is dettached from its parent
    */
-  protected onOrphan(): void {
+  protected onOrphan(event: EventOrphaned): void {
     this.clearArea();
     this.setBuffer(undefined);
+    event.stopImmediatePropagation();
   }
 
   /**
@@ -249,7 +251,7 @@ export class Element<
   /**
    * Recalculate internal data after moving or resizing the Element
    */
-  private recalculateCoords(event?: Event): void {
+  private recalculateCoords(): void {
     const parentPos = this.parent && this.parent.absPos;
     this.absPos = {
       col0: (parentPos ? parentPos.col0 : 0) + this.x,
@@ -258,12 +260,8 @@ export class Element<
       row1: (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1,
     };
 
-    if (event) {
-      event.stopPropagation();
-    }
-
     for (const child of this.children) {
-      child.emit('move');
+      child.recalculateCoords();
     }
   }
 }

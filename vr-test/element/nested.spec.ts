@@ -35,6 +35,15 @@ export const data: TestCases = [
     },
   },
   {
+    description: 'Moving an element should reposition its children too',
+    test: () => {
+      yellow.move(3, 2);
+      buffer.render();
+
+      return { buffer };
+    },
+  },
+  {
     description: 'Render nested overflowing elements: yellow > red',
     test: ({ canvas }) => {
       resetBuffer(canvas);
