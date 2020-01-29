@@ -112,9 +112,10 @@ before('set up the browser', async () => {
   browser = await puppeteer.launch(browserOptions);
   page = (await browser.pages())[0];
   let testUrl = `http://localhost:${WEBPACK_DEV_SERVER_PORT}/`;
+
   try {
     await page.goto(testUrl, {
-      timeout: 1000,
+      timeout: 3000,
     });
   } catch (e) {
     testUrl = `file://${VR_STATIC_FOLDER}/${VR_STATIC_FILE}`;

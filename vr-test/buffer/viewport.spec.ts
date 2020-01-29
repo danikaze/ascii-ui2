@@ -18,6 +18,7 @@ const intersection2: Viewport = {
 
 // tslint:disable: no-magic-numbers
 function resetBuffer(canvas: HTMLCanvasElement): void {
+  buffer?.clearInputEventListeners();
   buffer = new Buffer({
     canvas,
     cols: 10,
