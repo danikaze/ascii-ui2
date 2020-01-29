@@ -44,7 +44,7 @@ describe('Element', () => {
   });
 
   it(`Position should be relative to its parent's`, () => {
-    const parent = new Element({ x: 5, y: 10 });
+    const parent = new Element({ x: 5, y: 10, width: 20, height: 20 });
     const element = new Element({ x: 2, y: 3, width: 5, height: 6 });
 
     // tslint:disable: no-magic-numbers
@@ -81,7 +81,13 @@ describe('Element', () => {
 
   it(`Should stop tracking parent's position when dettached`, () => {
     const element = new Element({ x: 2, y: 3, width: 5, height: 6 });
-    const parent = new Element({ x: 5, y: 10, children: [element] });
+    const parent = new Element({
+      x: 5,
+      y: 10,
+      width: 20,
+      height: 20,
+      children: [element],
+    });
 
     assert.equal(element.getX(), 2);
     assert.equal(element.getY(), 3);

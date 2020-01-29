@@ -6,9 +6,10 @@ export function createBox(
   x: number,
   y: number,
   width = 6,
-  height = 5
+  height = 5,
+  options?: ElementOptions
 ): ColorBox {
-  return new ColorBox(color, { x, y, width, height });
+  return new ColorBox(color, { ...options, x, y, width, height });
 }
 
 export class ColorBox extends Element {

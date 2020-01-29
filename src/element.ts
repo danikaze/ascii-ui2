@@ -9,11 +9,19 @@ import {
 } from './node';
 import { Buffer } from './buffer';
 import { resizeMatrix } from './util/resize-matrix';
+import { extendObjectsOnly } from 'extend-objects-only';
 
 /**
  * Event emmited to itself, when the element is resized
  */
 export type EventResize = Event;
+
+export interface Padding {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
 
 export interface ElementOptions<
   C extends Element = Element,
@@ -29,6 +37,8 @@ export interface ElementOptions<
   height?: number;
   /** If visible or not by default */
   visible?: boolean;
+  /** Number of tiles from the borders to leave empty (not for the children) */
+  padding?: Padding;
 }
 
 export class Element<
@@ -51,6 +61,8 @@ export class Element<
   protected visible: boolean;
   /** Associated buffer (needed for clearing the element area) */
   private buffer?: Buffer;
+  /** Number of tiles from the borders to leave empty (not for the children) */
+  private readonly padding: Required<Padding>;
 
   constructor(options: ElementOptions<C, P> = {}) {
     super(options);
@@ -60,6 +72,13 @@ export class Element<
     this.width = options.width || 0;
     this.height = options.height || 0;
     this.visible = options.visible !== false;
+    this.padding = {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      ...options.padding,
+    };
 
     this.onAdopt = this.onAdopt.bind(this);
     this.onOrphan = this.onOrphan.bind(this);
@@ -95,6 +114,22 @@ export class Element<
    */
   public setY(row: number): void {
     this.setPosition(this.x, row);
+  }
+
+  /**
+   * Get the element padding definition
+   */
+  public getPadding(): Padding {
+    return this.padding;
+  }
+
+  /**
+   * Set new padding values.
+   * This values will combine with the existing ones
+   */
+  public setPadding(padding: Padding): void {
+    extendObjectsOnly(this.padding, padding);
+    this.recalculateCoords();
   }
 
   /**
@@ -253,11 +288,26 @@ export class Element<
    */
   private recalculateCoords(): void {
     const parentPos = this.parent && this.parent.absPos;
+    const parentPadding = this.parent && this.parent.padding;
     this.absPos = {
-      col0: (parentPos ? parentPos.col0 : 0) + this.x,
-      row0: (parentPos ? parentPos.row0 : 0) + this.y,
-      col1: (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1,
-      row1: (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1,
+      col0:
+        (parentPos ? parentPos.col0 : 0) +
+        (parentPadding ? parentPadding.left : 0) +
+        this.x,
+      row0:
+        (parentPos ? parentPos.row0 : 0) +
+        (parentPadding ? parentPadding.top : 0) +
+        this.y,
+      col1: Math.min(
+        (parentPos ? parentPos.col1 : Infinity) -
+          (parentPadding ? parentPadding.right : 0),
+        (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1
+      ),
+      row1: Math.min(
+        (parentPos ? parentPos.row1 : Infinity) -
+          (parentPadding ? parentPadding.bottom : 0),
+        (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1
+      ),
     };
 
     for (const child of this.children) {
