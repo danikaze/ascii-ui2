@@ -6,6 +6,7 @@ import {
   EventAdopted,
   Event,
   EventOrphaned,
+  EventAttached,
 } from './node';
 import { Buffer } from './buffer';
 import { resizeMatrix } from './util/resize-matrix';
@@ -39,6 +40,16 @@ export interface ElementOptions<
   visible?: boolean;
   /** Number of tiles from the borders to leave empty (not for the children) */
   padding?: Padding;
+}
+
+export interface LayoutResult {
+  col: number;
+  row: number;
+  width: number;
+  height: number;
+}
+export interface LayoutManager {
+  positionChild?: (child: Element) => LayoutResult;
 }
 
 export class Element<
@@ -84,6 +95,11 @@ export class Element<
     this.onOrphan = this.onOrphan.bind(this);
     this.on('adopt', this.onAdopt as EventHandler);
     this.on('orphan', this.onOrphan as EventHandler);
+    if ((this as LayoutManager).positionChild) {
+      this.onChildrenChange = this.onChildrenChange.bind(this);
+      this.on('attach', this.onChildrenChange as EventHandler);
+      this.on('dettach', this.onChildrenChange as EventHandler);
+    }
     this.recalculateCoords();
     resizeMatrix(this.content, this.width, this.height, {});
   }
@@ -257,6 +273,18 @@ export class Element<
   }
 
   /**
+   * Handler called when this a child is attached to or dettached from this Element
+   */
+  protected onChildrenChange(event: EventAttached): void {
+    if (event.target !== this) return;
+    // this event is received only when this Element implements LayoutManager
+    // which means that when the children change, they need to be repositioned
+    for (const child of this.children) {
+      child.recalculateCoords();
+    }
+  }
+
+  /**
    * Handler called when this Element is attached to another one
    */
   protected onAdopt(event: EventAdopted): void {
@@ -287,31 +315,43 @@ export class Element<
   }
 
   /**
-   * Recalculate internal data after moving or resizing the Element
+   * Recalculate internal data the Element changes
+   *
+   * If the parent implements the method `positionChild` of the `LayoutManager` interface,
+   * then the Element's position will be decided by the parent (it's up to it to use
+   * this Element's data such as the relative position, paddings, etc.)
    */
   private recalculateCoords(): void {
-    const parentPos = this.parent && this.parent.absPos;
-    const parentPadding = this.parent && this.parent.padding;
-    this.absPos = {
-      col0:
-        (parentPos ? parentPos.col0 : 0) +
-        (parentPadding ? parentPadding.left : 0) +
-        this.x,
-      row0:
-        (parentPos ? parentPos.row0 : 0) +
-        (parentPadding ? parentPadding.top : 0) +
-        this.y,
-      col1: Math.min(
-        (parentPos ? parentPos.col1 : Infinity) -
-          (parentPadding ? parentPadding.right : 0),
-        (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1
-      ),
-      row1: Math.min(
-        (parentPos ? parentPos.row1 : Infinity) -
-          (parentPadding ? parentPadding.bottom : 0),
-        (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1
-      ),
-    };
+    const parent = this.parent as P & LayoutManager;
+    const absPos = parent && parent.absPos;
+    const padding = parent && parent.padding;
+
+    if (parent && absPos && padding) {
+      if (parent.positionChild) {
+        const { col, row, width, height } = parent.positionChild(this);
+        this.setPosition(col, row);
+        this.resize(width, height);
+      }
+      this.absPos = {
+        col0: absPos.col0 + padding.left + this.x,
+        row0: absPos.row0 + padding.top + this.y,
+        col1: Math.min(
+          absPos.col1 - padding.right,
+          absPos.col0 + this.x + this.width - 1
+        ),
+        row1: Math.min(
+          absPos.row1 - padding.bottom,
+          absPos.row0 + this.y + this.height - 1
+        ),
+      };
+    } else {
+      this.absPos = {
+        col0: this.x,
+        row0: this.y,
+        col1: this.x + this.width - 1,
+        row1: this.y + this.height - 1,
+      };
+    }
 
     for (const child of this.children) {
       child.recalculateCoords();
