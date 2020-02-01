@@ -143,6 +143,7 @@ export class Element<
    * Set the position for the Element, relative to its parent
    */
   public setPosition(col: number, row: number): void {
+    if (col === this.x && row === this.y) return;
     this.clearArea();
     this.x = col;
     this.y = row;
@@ -188,6 +189,10 @@ export class Element<
    * Set a new size for the Element
    */
   public resize(columns: number, rows: number): void {
+    if (columns === this.width && rows === this.height) {
+      return;
+    }
+
     this.width = columns;
     this.height = rows;
     this.recalculateCoords();
