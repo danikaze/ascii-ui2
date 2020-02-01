@@ -143,9 +143,7 @@ export class Element<
    * Set the position for the Element, relative to its parent
    */
   public setPosition(col: number, row: number): void {
-    if (this.visible) {
-      this.clearArea();
-    }
+    this.clearArea();
     this.x = col;
     this.y = row;
     this.recalculateCoords();
@@ -202,7 +200,6 @@ export class Element<
    * Shows the element making it visible
    */
   public show(): void {
-    if (this.visible) return;
     this.visible = true;
   }
 
@@ -210,9 +207,8 @@ export class Element<
    * Hides the element making it invisible
    */
   public hide(): void {
-    if (!this.visible) return;
-    this.visible = false;
     this.clearArea();
+    this.visible = false;
   }
 
   /**
@@ -243,7 +239,7 @@ export class Element<
    * Remove the this element's content from the buffer clearing it
    */
   protected clearArea(): void {
-    if (this.buffer) {
+    if (this.buffer && this.visible) {
       this.buffer.clear(
         this.absPos.col0,
         this.absPos.row0,
