@@ -36,8 +36,16 @@ export const data: TestCases = [
     description: 'Modifying elements should re-render them properly',
     test: () => {
       yellow.move(2, 0);
-      red.setHeight(red.getHeight() - 2);
       red.setY(red.getY() + 3);
+      buffer.render();
+
+      return { buffer };
+    },
+  },
+  {
+    description: 'Resizing an element should clear the needed area',
+    test: () => {
+      red.resize(red.getWidth() - 1, red.getHeight() - 2);
       buffer.render();
 
       return { buffer };

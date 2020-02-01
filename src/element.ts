@@ -189,7 +189,9 @@ export class Element<
    * Set a new size for the Element
    */
   public resize(columns: number, rows: number): void {
-    if (columns === this.width && rows === this.height) {
+    if (columns < this.width || rows < this.height) {
+      this.clearArea();
+    } else if (columns === this.width && rows === this.height) {
       return;
     }
 
