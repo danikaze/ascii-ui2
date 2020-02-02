@@ -6,7 +6,7 @@ import {
 } from './input-event-listener';
 import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
-import { Element } from './element';
+import { Element, Padding } from './element';
 
 export interface BufferOptions extends InputEventListenerOptions {
   /** Associated canvas element where the buffer will be rendered */
@@ -17,6 +17,8 @@ export interface BufferOptions extends InputEventListenerOptions {
   rows: number;
   /** Style to use when clearing an area of the buffer */
   clearStyle: Tile;
+  /** Number of tiles from the borders to leave empty (not for the children) */
+  padding?: Padding;
 }
 
 export interface BufferRenderStats {
@@ -44,6 +46,7 @@ interface FriendElement {
   content: Tile[][];
   absPos: Viewport;
   visible: boolean;
+  recalculateCoords: () => void;
 }
 
 /**
@@ -84,7 +87,7 @@ export class Buffer<C extends Element = Element> extends InputEventListener<
 
   /** Current buffer state */
   protected readonly matrix: Cell[][] = []; // [row][col]
-  /** List of pushed viewports. Active one is `viewports[0]`, if any */
+  /** List of pushed viewports. Active one is `viewports[0]` */
   protected readonly viewports: Viewport[] = [];
 
   /** List of cells needed to be re-rendered */
@@ -93,6 +96,8 @@ export class Buffer<C extends Element = Element> extends InputEventListener<
   private readonly canvas: HTMLCanvasElement;
   /** Context of the canvas element usde for rendering */
   private readonly ctx: CanvasRenderingContext2D;
+  /** Number of tiles from the borders to leave empty (not for the children) */
+  private readonly padding: Required<Padding>;
   /** Stats about the last render */
   private readonly lastRenderStats: BufferRenderStats = {
     duration: 0,
@@ -125,6 +130,13 @@ export class Buffer<C extends Element = Element> extends InputEventListener<
       col1: 0,
       row1: 0,
     });
+    this.padding = {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      ...options.padding,
+    };
     this.resize(opt.cols, opt.rows);
   }
 
@@ -145,15 +157,33 @@ export class Buffer<C extends Element = Element> extends InputEventListener<
   /**
    * Get the width of one tile, in pixels
    */
-  get tileWidth() {
+  get tileWidth(): number {
     return this.tileW;
   }
 
   /**
    * Get the height of one tile, in pixels
    */
-  get tileHeight() {
+  get tileHeight(): number {
     return this.tileH;
+  }
+
+  /**
+   * Get the element padding definition
+   */
+  public getPadding(): Padding {
+    return this.padding;
+  }
+
+  /**
+   * Set new padding values.
+   * This values will combine with the existing ones
+   */
+  public setPadding(padding: Padding): void {
+    extendObjectsOnly(this.padding, padding);
+    for (const child of this.children) {
+      ((child as unknown) as FriendElement).recalculateCoords();
+    }
   }
 
   /**
@@ -258,7 +288,15 @@ export class Buffer<C extends Element = Element> extends InputEventListener<
    * Get the current viewport without removing it
    * It can be `undefined` if no viewport is active
    */
-  get viewport(): Viewport | undefined {
+  get viewport(): Viewport {
+    return this.viewports[0];
+  }
+
+  /**
+   * Alias for `viewport`.
+   * Exists for children elements whose parent is the Buffer
+   */
+  get absPos(): Viewport {
     return this.viewports[0];
   }
 

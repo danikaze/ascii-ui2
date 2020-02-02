@@ -210,11 +210,11 @@
       "x": 11,
       "y": 22,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -222,11 +222,11 @@
       "x": 22,
       "y": 22,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -234,11 +234,11 @@
       "x": 33,
       "y": 22,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -246,11 +246,11 @@
       "x": 44,
       "y": 22,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -258,11 +258,11 @@
       "x": 55,
       "y": 22,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -270,11 +270,11 @@
       "x": 66,
       "y": 22,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -404,11 +404,11 @@
       "x": 11,
       "y": 44,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -420,7 +420,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -432,7 +432,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -444,7 +444,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -456,7 +456,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -476,11 +476,11 @@
       "x": 77,
       "y": 44,
       "tile": {
-        "char": "",
+        "char": "x",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "#cccccc",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -598,11 +598,11 @@
       "x": 11,
       "y": 66,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -614,7 +614,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -626,7 +626,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -638,7 +638,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -650,7 +650,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -670,11 +670,11 @@
       "x": 77,
       "y": 66,
       "tile": {
-        "char": "",
+        "char": "x",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "#cccccc",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -792,11 +792,11 @@
       "x": 11,
       "y": 88,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "yellow",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -808,7 +808,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -820,7 +820,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -832,7 +832,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -844,7 +844,7 @@
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "red",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -864,11 +864,11 @@
       "x": 77,
       "y": 88,
       "tile": {
-        "char": "",
+        "char": "x",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "#cccccc",
+        "fg": "yellow",
         "bg": "#000000"
       }
     },
@@ -986,6 +986,18 @@
       "x": 11,
       "y": 110,
       "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 22,
+      "y": 110,
+      "tile": {
         "char": "x",
         "font": "22px Fixedsys",
         "offsetX": 0,
@@ -995,8 +1007,238 @@
       }
     },
     {
-      "x": 22,
+      "x": 33,
       "y": 110,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 44,
+      "y": 110,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 55,
+      "y": 110,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 66,
+      "y": 110,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 77,
+      "y": 110,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 88,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 99,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 110,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 121,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 132,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 143,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 154,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 165,
+      "y": 110,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    }
+  ],
+  [
+    {
+      "x": 0,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 11,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 22,
+      "y": 132,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 33,
+      "y": 132,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 44,
+      "y": 132,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 55,
+      "y": 132,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 66,
+      "y": 132,
       "tile": {
         "char": "x",
         "font": "22px Fixedsys",
@@ -1007,8 +1249,8 @@
       }
     },
     {
-      "x": 33,
-      "y": 110,
+      "x": 77,
+      "y": 132,
       "tile": {
         "char": "x",
         "font": "22px Fixedsys",
@@ -1019,8 +1261,178 @@
       }
     },
     {
+      "x": 88,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 99,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 110,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 121,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 132,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 143,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 154,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 165,
+      "y": 132,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    }
+  ],
+  [
+    {
+      "x": 0,
+      "y": 154,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 11,
+      "y": 154,
+      "tile": {
+        "char": "",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "#cccccc",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 22,
+      "y": 154,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 33,
+      "y": 154,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
       "x": 44,
-      "y": 110,
+      "y": 154,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 55,
+      "y": 154,
+      "tile": {
+        "char": "x",
+        "font": "22px Fixedsys",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fg": "yellow",
+        "bg": "#000000"
+      }
+    },
+    {
+      "x": 66,
+      "y": 154,
       "tile": {
         "char": "x",
         "font": "22px Fixedsys",
@@ -1031,8 +1443,8 @@
       }
     },
     {
-      "x": 55,
-      "y": 110,
+      "x": 77,
+      "y": 154,
       "tile": {
         "char": "x",
         "font": "22px Fixedsys",
@@ -1043,32 +1455,8 @@
       }
     },
     {
-      "x": 66,
-      "y": 110,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "yellow",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 77,
-      "y": 110,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
       "x": 88,
-      "y": 110,
+      "y": 154,
       "tile": {
         "char": "",
         "font": "22px Fixedsys",
@@ -1080,7 +1468,7 @@
     },
     {
       "x": 99,
-      "y": 110,
+      "y": 154,
       "tile": {
         "char": "",
         "font": "22px Fixedsys",
@@ -1092,7 +1480,7 @@
     },
     {
       "x": 110,
-      "y": 110,
+      "y": 154,
       "tile": {
         "char": "",
         "font": "22px Fixedsys",
@@ -1104,7 +1492,7 @@
     },
     {
       "x": 121,
-      "y": 110,
+      "y": 154,
       "tile": {
         "char": "",
         "font": "22px Fixedsys",
@@ -1116,7 +1504,7 @@
     },
     {
       "x": 132,
-      "y": 110,
+      "y": 154,
       "tile": {
         "char": "",
         "font": "22px Fixedsys",
@@ -1128,238 +1516,6 @@
     },
     {
       "x": 143,
-      "y": 110,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 154,
-      "y": 110,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 165,
-      "y": 110,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    }
-  ],
-  [
-    {
-      "x": 0,
-      "y": 132,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 11,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "yellow",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 22,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "yellow",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 33,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "yellow",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 44,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "yellow",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 55,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "yellow",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 66,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 77,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 88,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 99,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 110,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 121,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 132,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 143,
-      "y": 132,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 154,
-      "y": 132,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 165,
-      "y": 132,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    }
-  ],
-  [
-    {
-      "x": 0,
       "y": 154,
       "tile": {
         "char": "",
@@ -1367,162 +1523,6 @@
         "offsetX": 0,
         "offsetY": 0,
         "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 11,
-      "y": 154,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 22,
-      "y": 154,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 33,
-      "y": 154,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 44,
-      "y": 154,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 55,
-      "y": 154,
-      "tile": {
-        "char": "",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "#cccccc",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 66,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 77,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "white",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 88,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "white",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 99,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "white",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 110,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "white",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 121,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 132,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
-        "bg": "#000000"
-      }
-    },
-    {
-      "x": 143,
-      "y": 154,
-      "tile": {
-        "char": "x",
-        "font": "22px Fixedsys",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fg": "green",
         "bg": "#000000"
       }
     },
@@ -1628,11 +1628,11 @@
       "x": 66,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1640,11 +1640,11 @@
       "x": 77,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "#00ff00",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1652,11 +1652,11 @@
       "x": 88,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "#00ff00",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1664,11 +1664,11 @@
       "x": 99,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "#00ff00",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1676,11 +1676,11 @@
       "x": 110,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "#00ff00",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1688,11 +1688,11 @@
       "x": 121,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1700,11 +1700,11 @@
       "x": 132,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1712,11 +1712,11 @@
       "x": 143,
       "y": 176,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1822,11 +1822,11 @@
       "x": 66,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1834,11 +1834,11 @@
       "x": 77,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "white",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1846,11 +1846,11 @@
       "x": 88,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "white",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1858,11 +1858,11 @@
       "x": 99,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "white",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1870,11 +1870,11 @@
       "x": 110,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "white",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1882,11 +1882,11 @@
       "x": 121,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1894,11 +1894,11 @@
       "x": 132,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -1906,11 +1906,11 @@
       "x": 143,
       "y": 198,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2016,11 +2016,11 @@
       "x": 66,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2028,11 +2028,11 @@
       "x": 77,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2040,11 +2040,11 @@
       "x": 88,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2052,11 +2052,11 @@
       "x": 99,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2064,11 +2064,11 @@
       "x": 110,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2076,11 +2076,11 @@
       "x": 121,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2088,11 +2088,11 @@
       "x": 132,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },
@@ -2100,11 +2100,11 @@
       "x": 143,
       "y": 220,
       "tile": {
-        "char": "x",
+        "char": "",
         "font": "22px Fixedsys",
         "offsetX": 0,
         "offsetY": 0,
-        "fg": "green",
+        "fg": "#cccccc",
         "bg": "#000000"
       }
     },

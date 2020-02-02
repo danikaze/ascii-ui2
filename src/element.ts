@@ -1,16 +1,28 @@
 import { Tile, Viewport } from '@src';
-import { Node, NodeOptions, EventHandler, EventAdopted, Event } from './node';
+import {
+  Node,
+  NodeOptions,
+  EventHandler,
+  EventAdopted,
+  Event,
+  EventOrphaned,
+  EventAttached,
+} from './node';
 import { Buffer } from './buffer';
 import { resizeMatrix } from './util/resize-matrix';
+import { extendObjectsOnly } from 'extend-objects-only';
 
-/**
- * Event emmited to each children of the Element, when the element is moved
- */
-export type EventMove = Event;
 /**
  * Event emmited to itself, when the element is resized
  */
 export type EventResize = Event;
+
+export interface Padding {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
 
 export interface ElementOptions<
   C extends Element = Element,
@@ -26,6 +38,18 @@ export interface ElementOptions<
   height?: number;
   /** If visible or not by default */
   visible?: boolean;
+  /** Number of tiles from the borders to leave empty (not for the children) */
+  padding?: Padding;
+}
+
+export interface LayoutResult {
+  col: number;
+  row: number;
+  width: number;
+  height: number;
+}
+export interface LayoutManager {
+  positionChild?: (child: Element) => LayoutResult;
 }
 
 export class Element<
@@ -48,6 +72,8 @@ export class Element<
   protected visible: boolean;
   /** Associated buffer (needed for clearing the element area) */
   private buffer?: Buffer;
+  /** Number of tiles from the borders to leave empty (not for the children) */
+  private readonly padding: Required<Padding>;
 
   constructor(options: ElementOptions<C, P> = {}) {
     super(options);
@@ -57,13 +83,23 @@ export class Element<
     this.width = options.width || 0;
     this.height = options.height || 0;
     this.visible = options.visible !== false;
+    this.padding = {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      ...options.padding,
+    };
 
-    this.recalculateCoords = this.recalculateCoords.bind(this);
     this.onAdopt = this.onAdopt.bind(this);
     this.onOrphan = this.onOrphan.bind(this);
     this.on('adopt', this.onAdopt as EventHandler);
-    this.on('orphan', this.onOrphan);
-    this.on('move', this.recalculateCoords as EventHandler);
+    this.on('orphan', this.onOrphan as EventHandler);
+    if ((this as LayoutManager).positionChild) {
+      this.onChildrenChange = this.onChildrenChange.bind(this);
+      this.on('attach', this.onChildrenChange as EventHandler);
+      this.on('dettach', this.onChildrenChange as EventHandler);
+    }
     this.recalculateCoords();
     resizeMatrix(this.content, this.width, this.height, {});
   }
@@ -97,6 +133,22 @@ export class Element<
   }
 
   /**
+   * Get the element padding definition
+   */
+  public getPadding(): Padding {
+    return this.padding;
+  }
+
+  /**
+   * Set new padding values.
+   * This values will combine with the existing ones
+   */
+  public setPadding(padding: Padding): void {
+    extendObjectsOnly(this.padding, padding);
+    this.recalculateCoords();
+  }
+
+  /**
    * Get the bounding rectangle of the element, in absolute coordinates
    */
   public getBounds(): Viewport {
@@ -107,9 +159,8 @@ export class Element<
    * Set the position for the Element, relative to its parent
    */
   public setPosition(col: number, row: number): void {
-    if (this.visible) {
-      this.clearArea();
-    }
+    if (col === this.x && row === this.y) return;
+    this.clearArea();
     this.x = col;
     this.y = row;
     this.recalculateCoords();
@@ -154,6 +205,12 @@ export class Element<
    * Set a new size for the Element
    */
   public resize(columns: number, rows: number): void {
+    if (columns < this.width || rows < this.height) {
+      this.clearArea();
+    } else if (columns === this.width && rows === this.height) {
+      return;
+    }
+
     this.width = columns;
     this.height = rows;
     this.recalculateCoords();
@@ -166,7 +223,6 @@ export class Element<
    * Shows the element making it visible
    */
   public show(): void {
-    if (this.visible) return;
     this.visible = true;
   }
 
@@ -174,9 +230,8 @@ export class Element<
    * Hides the element making it invisible
    */
   public hide(): void {
-    if (!this.visible) return;
-    this.visible = false;
     this.clearArea();
+    this.visible = false;
   }
 
   /**
@@ -207,13 +262,25 @@ export class Element<
    * Remove the this element's content from the buffer clearing it
    */
   protected clearArea(): void {
-    if (this.buffer) {
+    if (this.buffer && this.visible) {
       this.buffer.clear(
         this.absPos.col0,
         this.absPos.row0,
         this.absPos.col1,
         this.absPos.row1
       );
+    }
+  }
+
+  /**
+   * Handler called when this a child is attached to or dettached from this Element
+   */
+  protected onChildrenChange(event: EventAttached): void {
+    if (event.target !== this) return;
+    // this event is received only when this Element implements LayoutManager
+    // which means that when the children change, they need to be repositioned
+    for (const child of this.children) {
+      child.recalculateCoords();
     }
   }
 
@@ -225,15 +292,16 @@ export class Element<
       this.parent instanceof Buffer ? this.parent : this.parent!.buffer
     );
     this.recalculateCoords();
-    event.stopPropagation();
+    event.stopImmediatePropagation();
   }
 
   /**
    * Handler called when this Element is dettached from its parent
    */
-  protected onOrphan(): void {
+  protected onOrphan(event: EventOrphaned): void {
     this.clearArea();
     this.setBuffer(undefined);
+    event.stopImmediatePropagation();
   }
 
   /**
@@ -247,23 +315,46 @@ export class Element<
   }
 
   /**
-   * Recalculate internal data after moving or resizing the Element
+   * Recalculate internal data the Element changes
+   *
+   * If the parent implements the method `positionChild` of the `LayoutManager` interface,
+   * then the Element's position will be decided by the parent (it's up to it to use
+   * this Element's data such as the relative position, paddings, etc.)
    */
-  private recalculateCoords(event?: Event): void {
-    const parentPos = this.parent && this.parent.absPos;
-    this.absPos = {
-      col0: (parentPos ? parentPos.col0 : 0) + this.x,
-      row0: (parentPos ? parentPos.row0 : 0) + this.y,
-      col1: (parentPos ? parentPos.col0 : 0) + this.x + this.width - 1,
-      row1: (parentPos ? parentPos.row0 : 0) + this.y + this.height - 1,
-    };
+  private recalculateCoords(): void {
+    const parent = this.parent as P & LayoutManager;
+    const absPos = parent && parent.absPos;
+    const padding = parent && parent.padding;
 
-    if (event) {
-      event.stopPropagation();
+    if (parent && absPos && padding) {
+      if (parent.positionChild) {
+        const { col, row, width, height } = parent.positionChild(this);
+        this.setPosition(col, row);
+        this.resize(width, height);
+      }
+      this.absPos = {
+        col0: absPos.col0 + padding.left + this.x,
+        row0: absPos.row0 + padding.top + this.y,
+        col1: Math.min(
+          absPos.col1 - padding.right,
+          absPos.col0 + this.x + this.width - 1
+        ),
+        row1: Math.min(
+          absPos.row1 - padding.bottom,
+          absPos.row0 + this.y + this.height - 1
+        ),
+      };
+    } else {
+      this.absPos = {
+        col0: this.x,
+        row0: this.y,
+        col1: this.x + this.width - 1,
+        row1: this.y + this.height - 1,
+      };
     }
 
     for (const child of this.children) {
-      child.emit('move');
+      child.recalculateCoords();
     }
   }
 }
