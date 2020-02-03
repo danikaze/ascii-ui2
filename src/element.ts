@@ -16,6 +16,22 @@ import { extendObjectsOnly } from 'extend-objects-only';
  * Event emmited to itself, when the element is resized
  */
 export type EventResize = Event;
+/**
+ * Event emmited to itself, when the element gains the focus
+ */
+export type EventFocus = Event;
+/**
+ * Event emmited to itself, when the element loses the focus
+ */
+export type EventBlur = Event;
+/**
+ * Event emmited to itself, when the element is disabled
+ */
+export type EventDisable = Event;
+/**
+ * Event emmited to itself, when the element is enabled
+ */
+export type EventEnable = Event;
 
 export interface Padding {
   top?: number;
@@ -40,6 +56,10 @@ export interface ElementOptions<
   visible?: boolean;
   /** Number of tiles from the borders to leave empty (not for the children) */
   padding?: Padding;
+  /** If the element can receive focus or not (`true` by default) */
+  focusable?: boolean;
+  /** If `true`, the element will be disabled when created (`false` by default) */
+  disabled?: boolean;
 }
 
 export interface LayoutResult {
@@ -70,6 +90,12 @@ export class Element<
   protected absPos!: Viewport;
   /** If the element is visible or hidden */
   protected visible: boolean;
+  /** If the element can receive focus or not */
+  protected focusable: boolean;
+  /** `true` if the element is focused */
+  protected focused: boolean = false;
+  /** If the element is disabled */
+  protected disabled: boolean;
   /** Associated buffer (needed for clearing the element area) */
   private buffer?: Buffer;
   /** Number of tiles from the borders to leave empty (not for the children) */
@@ -90,6 +116,8 @@ export class Element<
       left: 0,
       ...options.padding,
     };
+    this.focusable = options.focusable !== false;
+    this.disabled = options.disabled === true;
 
     this.onAdopt = this.onAdopt.bind(this);
     this.onOrphan = this.onOrphan.bind(this);
@@ -249,6 +277,67 @@ export class Element<
    */
   public isVisible(): boolean {
     return this.visible;
+  }
+
+  /**
+   * Gives the focus to the element.
+   * Note that if there's no focus manager being used,
+   * several elements can be focused at the same time technically
+   */
+  public focus(): void {
+    if (!this.focusable || this.focused || this.disabled) return;
+    this.focused = true;
+    this.emit('focus');
+  }
+
+  /**
+   * Removes the focus from the element
+   */
+  public blur(): void {
+    if (!this.focusable || !this.focused) return;
+    this.focused = false;
+    this.emit('blur');
+  }
+
+  /**
+   * Retrieve if the element is currentlyfocused
+   */
+  public isFocused(): boolean {
+    return this.focused;
+  }
+
+  /**
+   * Retrieve if the element can receive the focus or not
+   */
+  public isFocusable(): boolean {
+    return this.focusable;
+  }
+
+  /**
+   * Disables the element.
+   * A disabled element cannot receive focus, but will receive events.
+   * If used as a Widget, it will be rendered with the `disabled` style
+   */
+  public disable(): void {
+    this.disabled = true;
+    if (this.focused) this.blur();
+    this.emit('disable');
+  }
+
+  /**
+   * Enables the element.
+   * An enabled element can receive focus
+   */
+  public enable(): void {
+    this.disabled = false;
+    this.emit('enable');
+  }
+
+  /**
+   * Gets the current enabled status of the element
+   */
+  public isDisabled(): boolean {
+    return this.disabled;
   }
 
   /**

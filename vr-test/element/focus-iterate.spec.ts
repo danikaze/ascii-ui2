@@ -1,13 +1,13 @@
 import { TestCases } from '@test';
-import { FocusManager } from '@src/focus-manager';
+import { Buffer } from '@src/buffer';
+import { Element } from '@src/element';
 import { createBox } from './utils';
-import { FocusableElement } from '@src/focusable-element';
 
-let buffer: FocusManager;
-let red: FocusableElement;
-let green: FocusableElement;
-let grey: FocusableElement;
-let yellow: FocusableElement;
+let buffer: Buffer;
+let red: Element;
+let green: Element;
+let grey: Element;
+let yellow: Element;
 
 async function focusNext() {
   buffer.focusNext();
@@ -28,12 +28,12 @@ export const data: TestCases = [
     description: 'No element is focused at the beginning',
     test: async ({ canvas }) => {
       // tslint:disable: no-magic-numbers
-      buffer = new FocusManager({ canvas, cols: 4, rows: 4 });
+      buffer = new Buffer({ canvas, cols: 4, rows: 4 });
 
-      red = createBox('red', 0, 0, true);
-      green = createBox('green', 2, 0, true);
-      grey = createBox('grey', 0, 2, false);
-      yellow = createBox('yellow', 2, 2, true);
+      red = createBox('red', 0, 0, 2, 2, { focusable: true });
+      green = createBox('green', 2, 0, 2, 2, { focusable: true });
+      grey = createBox('grey', 0, 2, 2, 2, { focusable: false });
+      yellow = createBox('yellow', 2, 2, 2, 2, { focusable: true });
 
       buffer.append(red);
       buffer.append(green);

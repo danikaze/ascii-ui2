@@ -19,10 +19,16 @@ export class ColorBox extends Element {
     super(options);
     this.color = color;
     this.setContent();
+    this.on('blur focus', this.setContent.bind(this));
   }
 
   protected setContent(): void {
-    fillMatrix(this.content, { char: 'x', fg: this.color });
+    this.clearArea();
+    fillMatrix(this.content, {
+      char: this.disabled ? '.' : this.focused ? ' ' : 'x',
+      fg: this.focused ? undefined : this.color,
+      bg: this.focused ? this.color : undefined,
+    });
   }
 }
 
