@@ -1,7 +1,7 @@
 import { TestCases } from '@test';
 import { Buffer } from '@src/buffer';
-import { createBox } from './utils';
 import { Element } from '@src/element';
+import { createBox } from './utils';
 
 let buffer: Buffer;
 let red: Element;
@@ -16,10 +16,10 @@ export const data: TestCases = [
       // tslint:disable: no-magic-numbers
       buffer = new Buffer({ canvas, cols: 4, rows: 4 });
 
-      red = createBox('red', 0, 0, true);
-      green = createBox('green', 2, 0, true);
-      blue = createBox('blue', 0, 2, true);
-      yellow = createBox('yellow', 2, 2, true);
+      red = createBox('red', 0, 0, 2, 2, { focusable: true });
+      green = createBox('green', 2, 0, 2, 2, { focusable: true });
+      blue = createBox('blue', 0, 2, 2, 2, { focusable: true });
+      yellow = createBox('yellow', 2, 2, 2, 2, { focusable: true });
 
       buffer.append(red);
       buffer.append(green);
