@@ -1,9 +1,9 @@
 import { TestCases } from '@test';
-import { FocusManager } from '@src/focus-manager';
+import { Buffer } from '@src/buffer';
 import { createBox } from './utils';
 import { Element } from '@src/element';
 
-let buffer: FocusManager;
+let buffer: Buffer;
 let e1: Element;
 let e11: Element;
 let e12: Element;
@@ -28,7 +28,7 @@ export const data: TestCases = [
     description: 'No element is focused at the beginning',
     test: async ({ canvas }) => {
       // tslint:disable: no-magic-numbers
-      buffer = new FocusManager({ canvas, cols: 8, rows: 10 });
+      buffer = new Buffer({ canvas, cols: 8, rows: 10 });
 
       e1 = createBox('red', 0, 0, true, 8, 5);
       e11 = createBox('yellow', 1, 1, true, 1, 1);

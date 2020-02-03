@@ -1,17 +1,21 @@
-import { Buffer, BufferOptions } from './buffer';
+import {
+  InputEventListener,
+  InputEventListenerOptions,
+} from './input-event-listener';
 import { Element } from './element';
 import { EventAttached } from './node';
 
-type BaseFocusManagerOptions = Partial<BufferOptions> &
-  Pick<BufferOptions, 'canvas'>;
+export type FocusManagerOptions = InputEventListenerOptions;
 
-export class FocusManager<C extends Element = Element> extends Buffer<C> {
+export class FocusManager<
+  C extends Element = Element
+> extends InputEventListener<C, never> {
   /** Currently focused element, if any */
   protected focusedElement?: C;
   /** Ordered list of focusable elements */
   protected readonly focusableElements: Element[] = [];
 
-  constructor(options: BaseFocusManagerOptions) {
+  constructor(options: FocusManagerOptions) {
     super(options);
 
     this.on('blur', ({ target }) => {

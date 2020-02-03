@@ -1,14 +1,11 @@
 import { extendObjectsOnly } from 'extend-objects-only';
 import { Tile, Viewport } from '@src';
-import {
-  InputEventListener,
-  InputEventListenerOptions,
-} from './input-event-listener';
+import { FocusManager, FocusManagerOptions } from './focus-manager';
 import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
 import { Element, Padding } from './element';
 
-export interface BufferOptions extends InputEventListenerOptions {
+export interface BufferOptions extends FocusManagerOptions {
   /** Associated canvas element where the buffer will be rendered */
   canvas: HTMLCanvasElement;
   /** Number of columns of the buffer */
@@ -52,10 +49,7 @@ interface FriendElement {
 /**
  * Low level interface for controlling the canvas output
  */
-export class Buffer<C extends Element = Element> extends InputEventListener<
-  C,
-  never
-> {
+export class Buffer<C extends Element = Element> extends FocusManager<C> {
   public static readonly defaultOptions: Omit<
     BufferOptions,
     'canvas' | 'eventTarget'
