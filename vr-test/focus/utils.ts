@@ -1,7 +1,4 @@
-import {
-  FocusableElement,
-  FocusableElementOptions,
-} from '@src/focusable-element';
+import { Element, ElementOptions } from '@src/element';
 import { fillMatrix } from '@vr-test/utils/fill-matrix';
 
 export function createBox(
@@ -21,10 +18,10 @@ export function createBox(
   });
 }
 
-export class ColorBox extends FocusableElement {
+export class ColorBox extends Element {
   protected readonly color: string;
 
-  constructor(color: string, options: FocusableElementOptions) {
+  constructor(color: string, options: ElementOptions) {
     super(options);
     this.color = color;
     this.setContent();

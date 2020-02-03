@@ -1,17 +1,15 @@
 import { Buffer, BufferOptions } from './buffer';
-import { FocusableElement } from './focusable-element';
+import { Element } from './element';
 import { EventAttached } from './node';
 
 type BaseFocusManagerOptions = Partial<BufferOptions> &
   Pick<BufferOptions, 'canvas'>;
 
-export class FocusManager<
-  C extends FocusableElement = FocusableElement
-> extends Buffer<C> {
+export class FocusManager<C extends Element = Element> extends Buffer<C> {
   /** Currently focused element, if any */
   protected focusedElement?: C;
   /** Ordered list of focusable elements */
-  protected readonly focusableElements: FocusableElement[] = [];
+  protected readonly focusableElements: Element[] = [];
 
   constructor(options: BaseFocusManagerOptions) {
     super(options);
@@ -37,13 +35,13 @@ export class FocusManager<
 
     this.on('attach', event => {
       this.addFocusableElement(
-        ((event as unknown) as EventAttached).node as FocusableElement
+        ((event as unknown) as EventAttached).node as Element
       );
     });
 
     this.on('dettach', event => {
       this.removeFocusableElement(
-        ((event as unknown) as EventAttached).node as FocusableElement
+        ((event as unknown) as EventAttached).node as Element
       );
     });
   }
@@ -87,7 +85,7 @@ export class FocusManager<
   /**
    * Traverse an element adding it and its children to the focusable element list
    */
-  private addFocusableElement(elem: FocusableElement): void {
+  private addFocusableElement(elem: Element): void {
     const listToAdd = this.getDescendants(elem).filter(elem =>
       elem.isFocusable()
     );
@@ -96,7 +94,7 @@ export class FocusManager<
     const elements = this.focusableElements;
     let index = this.getFocusableElementInsertIndex(
       listToAdd[0],
-      (this as unknown) as FocusableElement
+      (this as unknown) as Element
     );
     if (index === -1 || index === undefined) {
       index = elements.length;
@@ -107,7 +105,7 @@ export class FocusManager<
   /**
    * Remove the dettached element and all its descendant from the list of focusable elements
    */
-  private removeFocusableElement(elem: FocusableElement): void {
+  private removeFocusableElement(elem: Element): void {
     const listToRemove = this.getDescendants(elem);
     for (const elemToRemove of listToRemove) {
       const index = this.focusableElements.indexOf(elemToRemove);
@@ -119,10 +117,7 @@ export class FocusManager<
   /**
    * Traverse an element and its descendants and return an ordered list of all found elements
    */
-  private getDescendants(
-    elem: FocusableElement,
-    acc: FocusableElement[] = []
-  ): FocusableElement[] {
+  private getDescendants(elem: Element, acc: Element[] = []): Element[] {
     acc.push(elem);
 
     for (const child of elem.getChildren()) {
@@ -140,9 +135,9 @@ export class FocusManager<
    * @param prev Like `getDescendants`' `acc`, but only maintaining the last element
    */
   private getFocusableElementInsertIndex(
-    elem: FocusableElement,
-    start: FocusableElement,
-    prev: FocusableElement[] = []
+    elem: Element,
+    start: Element,
+    prev: Element[] = []
   ): number | undefined {
     if (elem === start) {
       const index = this.focusableElements.indexOf(prev[0]!);

@@ -1,20 +1,20 @@
 import { TestCases } from '@test';
 import { FocusManager } from '@src/focus-manager';
 import { createBox } from './utils';
-import { FocusableElement } from '@src/focusable-element';
+import { Element } from '@src/element';
 
 let buffer: FocusManager;
-let e1: FocusableElement;
-let e11: FocusableElement;
-let e12: FocusableElement;
-let e13: FocusableElement;
-let e14: FocusableElement;
-let e141: FocusableElement;
-let e142: FocusableElement;
-let e2: FocusableElement;
-let e21: FocusableElement;
-let e211: FocusableElement;
-let e2111: FocusableElement;
+let e1: Element;
+let e11: Element;
+let e12: Element;
+let e13: Element;
+let e14: Element;
+let e141: Element;
+let e142: Element;
+let e2: Element;
+let e21: Element;
+let e211: Element;
+let e2111: Element;
 
 async function focusNext() {
   buffer.focusNext();
