@@ -25,7 +25,7 @@ export class ColorBox extends Element {
   protected setContent(): void {
     this.clearArea();
     fillMatrix(this.content, {
-      char: this.focused ? ' ' : 'x',
+      char: this.disabled ? '.' : this.focused ? ' ' : 'x',
       fg: this.focused ? undefined : this.color,
       bg: this.focused ? this.color : undefined,
     });
