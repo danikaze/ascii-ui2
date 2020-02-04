@@ -1,5 +1,5 @@
 import { extendObjectsOnly } from 'extend-objects-only';
-import { Tile, Viewport } from '@src';
+import { Tile, Viewport, tileProperties, TileProperties } from '@src';
 import { FocusManager, FocusManagerOptions } from './focus-manager';
 import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
@@ -135,6 +135,20 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
   }
 
   /**
+   * Extends the `target` Tile with the `base` one values.
+   * It won't overwrite values with `undefined`.
+   * Unneeded values from `base` won't be copied.
+   */
+  public static assignTile(target: Tile, base: Tile): void {
+    for (const property of tileProperties as TileProperties[]) {
+      if (base[property] !== undefined) {
+        // tslint:disable: no-any
+        (target as any)[property] = base[property];
+      }
+    }
+  }
+
+  /**
    * Get the width of the buffer, in number of columns
    */
   get width(): number {
@@ -215,7 +229,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
   public setClearStyle(style: Tile): void {
     // extendObjectsOnly instead of Object.assign so `undefined`
     // properties do not overwrite the previous value
-    extendObjectsOnly(this.clearStyle, style);
+    Buffer.assignTile(this.clearStyle, style);
   }
 
   /**
@@ -404,9 +418,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
       return;
     }
 
-    // extendObjectsOnly instead of Object.assign so `undefined`
-    // properties do not overwrite the previous value
-    extendObjectsOnly(cell.tile, tile);
+    Buffer.assignTile(cell.tile, tile);
     if (!this.dirtyCells.includes(cell)) {
       this.dirtyCells.push(cell);
     }

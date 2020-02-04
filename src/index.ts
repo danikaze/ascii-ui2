@@ -31,4 +31,20 @@ export interface CharTile extends TileStyle {
   char?: string;
 }
 
+export const tileProperties = [
+  'font',
+  'offsetX',
+  'offsetY',
+  'fg',
+  'bg',
+  'char',
+];
+export type TileProperties =
+  | 'font'
+  | 'offsetX'
+  | 'offsetY'
+  | 'fg'
+  | 'bg'
+  | 'char';
+
 export type Tile = CharTile;
