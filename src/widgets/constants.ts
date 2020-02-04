@@ -1,5 +1,7 @@
 import { Styles } from '.';
 
+export const ELLIPSIS = '…';
+
 export const enum Colors {
   fg = '#bbb',
   bg = '#000',
