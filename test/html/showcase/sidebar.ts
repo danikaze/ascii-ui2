@@ -34,6 +34,11 @@ export function initSidebar() {
     .getElementById('sidebar-button')!
     .addEventListener('click', toggleSidebar);
 
+  // clicking on sidebar-shorcuts-button => toggle shortcuts
+  document
+    .getElementById('sidebar-help-button')!
+    .addEventListener('click', toggleHelp);
+
   // click on +/- button => toggle all folders of first level
   document
     .getElementById('sidebar-collapse-all')!
@@ -75,4 +80,8 @@ export function setActiveTest(testName: string): void {
 
 function toggleSidebar() {
   document.body.classList.toggle('sidebar-hidden');
+}
+
+function toggleHelp() {
+  document.querySelector('#sidebar-help .contents')!.classList.toggle('hidden');
 }
