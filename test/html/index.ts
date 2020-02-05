@@ -3,6 +3,7 @@ import { Buffer } from '@src/buffer';
 import { initSidebar } from './showcase/sidebar';
 import { loadTest, resetCanvas } from './showcase/test';
 import { initFilter } from './showcase/filter';
+import { registerShortcuts } from './showcase/shortcuts';
 
 export interface LoadTestOptions {
   step?: number | 'all' | 'none';
@@ -21,6 +22,7 @@ export interface TestWindow extends Window {
 export function initPage() {
   initSidebar();
   initFilter();
+  registerShortcuts();
 
   // load initial test case, if any
   const initialUrl = new URL(location.href);
