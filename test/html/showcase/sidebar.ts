@@ -63,6 +63,14 @@ export function setActiveTest(testName: string): void {
   }
   activeIndexLi = indexLi[testName];
   activeIndexLi.classList.add('active');
+
+  let parent = activeIndexLi.parentElement;
+  while (parent) {
+    if (parent.classList.contains('folder')) {
+      parent.classList.remove('closed');
+    }
+    parent = parent.parentElement;
+  }
 }
 
 function toggleSidebar() {
