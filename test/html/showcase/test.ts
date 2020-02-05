@@ -5,7 +5,7 @@ import {
   BrowserTestData,
   BrowserTestFunctionReturnData,
 } from '../../';
-import { LoadTestOptions } from '..';
+import { LoadTestOptions, TestWindow } from '..';
 import { setActiveTest } from './sidebar';
 import { initProgressBar, updateProgressBar, setError } from './progress';
 
@@ -155,6 +155,10 @@ async function executeStep<R>(
   try {
     errorsElem.style.display = 'none';
     const testResult = await testCase.test(data);
+    // export global variables for easier manual testing in the showcase
+    ((window as unknown) as TestWindow).buffer = testResult.buffer;
+    ((window as unknown) as TestWindow).canvas = data.canvas;
+
     // test only cares about the matrix content of the buffer
     // and actually, not stripping the buffer, might cause errors
     // when stringifying the data to return from puppeteer because of

@@ -1,4 +1,5 @@
 import { BrowserTestFunctionReturnData } from '@test';
+import { Buffer } from '@src/buffer';
 import { initSidebar } from './showcase/sidebar';
 import { loadTest, resetCanvas } from './showcase/test';
 import { initFilter } from './showcase/filter';
@@ -13,6 +14,8 @@ export interface TestWindow extends Window {
     options?: LoadTestOptions
   ) => Promise<BrowserTestFunctionReturnData<R> | void>;
   resetCanvas: () => void;
+  canvas: HTMLCanvasElement;
+  buffer: Buffer;
 }
 
 export function initPage() {
