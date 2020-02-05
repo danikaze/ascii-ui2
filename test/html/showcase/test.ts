@@ -49,6 +49,7 @@ export async function loadTest<R extends {}>(
   return font.load().then(() => {
     const step = options.step!;
     if (step === 'none' || step === 'all' || step < 0 || step >= data.length) {
+      resetTestCaseDescriptionHeight();
       resetCanvas();
     }
     if (options.step !== 'none') {
@@ -117,6 +118,28 @@ async function executeTest<R extends {}>(
 }
 
 /**
+ * Set the test case description.
+ * Manages it so the canvas position doesn't change depending on it's length
+ */
+function setTestCaseDescription(description: string): void {
+  const descriptionElem = document.getElementById('description')!;
+  const oldHeight = descriptionElem.getBoundingClientRect().height;
+  resetTestCaseDescriptionHeight();
+  descriptionElem.innerText = description;
+  const newHeight = descriptionElem.getBoundingClientRect().height;
+  descriptionElem.style.minHeight = `${Math.max(oldHeight, newHeight)}px`;
+}
+
+/**
+ * Reset the height of the description element
+ */
+function resetTestCaseDescriptionHeight(): void {
+  const descriptionElem = document.getElementById('description')!;
+  descriptionElem.innerText = '';
+  descriptionElem.style.minHeight = '';
+}
+
+/**
  * Execute only one step of a specific test case
  */
 async function executeStep<R>(
@@ -126,8 +149,7 @@ async function executeStep<R>(
 ): Promise<BrowserTestFunctionReturnData<R> | void> {
   const testCase = tests[step];
   const errorsElem = document.getElementById('errors')!;
-  document.getElementById('description')!.innerText =
-    testCase.description || '';
+  setTestCaseDescription(testCase.description || '');
   updateProgressBar(step);
 
   try {
@@ -152,3 +174,8 @@ async function executeStep<R>(
     console.error(error);
   }
 }
+
+/**
+ * When the window is resized, reset the set height of the description
+ */
+window.addEventListener('resize', resetTestCaseDescriptionHeight);
