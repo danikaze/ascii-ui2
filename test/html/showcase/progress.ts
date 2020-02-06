@@ -48,16 +48,15 @@ export function updateProgressBar(step: number): void {
 
   const newStep = Math.max(0, Math.min(lastStep, step));
   if (currentStep === newStep) return;
-  currentStep = newStep;
 
   // next/prev buttons clickability
-  if (currentStep <= 0) {
+  if (newStep <= 0) {
     prevStep.classList.add('disabled');
   } else {
     prevStep.classList.remove('disabled');
   }
 
-  if (currentStep >= lastStep) {
+  if (newStep >= lastStep) {
     nextStep.classList.add('disabled');
   } else {
     nextStep.classList.remove('disabled');
@@ -70,6 +69,10 @@ export function updateProgressBar(step: number): void {
   for (let s = newStep + 1; s <= lastStep; s++) {
     bg.children[s].classList.remove('done');
   }
+  bg.children[currentStep]?.classList.remove('current');
+  bg.children[newStep].classList.add('current');
+
+  currentStep = newStep;
 }
 
 /**

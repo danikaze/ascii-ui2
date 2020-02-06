@@ -25,6 +25,7 @@
         --sidebar-width: 250px;
         --sidebar-button-width: 10px;
         --top-bar-height: 21px;
+        --sidebar-help-button-height: 10px;
       }
 
       body {
@@ -122,7 +123,6 @@
         overflow: hidden;
         margin: 0;
         padding-left: 13px;
-        transition: height var(--transition-props);
       }
       #sidebar-index .closed > .contents {
         height: 0;
@@ -239,6 +239,9 @@
         color: #32543a;
         background-color: #6ad080;
       }
+      #progress-bar .button.done.current {
+        background-color: #86ef9c;
+      }
       #progress-bar .button.done.error {
         color: white;
         background-color: #cc0000;
@@ -263,6 +266,40 @@
         padding: 10px;
         border: 1px solid #d00000;
       }
+
+      #sidebar-help {
+        font-size: smaller;
+        background-color: #bdbdbd;
+        color: #353535;
+        padding-top: var(--sidebar-help-button-height);
+        width: calc(var(--sidebar-width) - var(--sidebar-button-width));
+        position: absolute;
+        bottom: 0;
+      }
+      #sidebar-help .contents.hidden {
+        height: 0;
+        overflow: hidden;
+      }
+      #sidebar-help .shortcut {
+        margin: 3px 10px;
+      }
+      #sidebar-help .shortcut .key {
+        background: #efefef;
+        padding: 2px 4px;
+        border: 1px solid #cecece;
+        border-radius: 5px;
+        min-width: 10px;
+        display: inline-block;
+        text-align: center;
+      }
+      #sidebar-help-button {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: var(--sidebar-help-button-height);
+        background-color: #91a5b9;
+      }
     </style>
   </head>
   <body>
@@ -274,6 +311,59 @@
       </div>
       <div id="sidebar-index"><%= htmlWebpackPlugin.options.index %></div>
       <div id="sidebar-button"></div>
+      <div id="sidebar-help">
+        <div id="sidebar-help-button"></div>
+        <div class="contents hidden">
+          <div class="shortcut">
+            <span class="key">S</span>
+            <span class="description">Toggle sidebar</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">H</span>
+            <span class="description">Toggle this help</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">/</span>
+            <span class="description">Search</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">/</span>
+            <span class="description">Clear search filter</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">+</span>
+            <span class="description">Expand all</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">-</span>
+            <span class="description">Collapse all</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">Home</span>
+            <span class="description">First step</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">End</span>
+            <span class="description">Last step</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">←</span>
+            <span class="description">Previous step</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">→</span>
+            <span class="description">Next step</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">↑</span>
+            <span class="description">Previous test case</span>
+          </div>
+          <div class="shortcut">
+            <span class="key">Alt</span>+<span class="key">↓</span>
+            <span class="description">Next test case</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="main">
       <div id="top-bar">
