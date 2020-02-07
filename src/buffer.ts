@@ -5,6 +5,30 @@ import { isInsideBox } from './util/is-inside-box';
 import { resizeMatrix } from './util/resize-matrix';
 import { Element, Padding } from './element';
 
+/**
+ * Event triggered when the Buffer is resized
+ */
+export interface EventResize extends Event {
+  cols: number;
+  rows: number;
+}
+/**
+ * Event triggered before the render starts
+ */
+export type EventPreRender = Event;
+/**
+ * Event triggered when the render ends
+ */
+export type EventRender = Event;
+/**
+ * Event triggered before the draw ends
+ */
+export type EventPreDraw = Event;
+/**
+ * Event triggered when the draw ends
+ */
+export type EventDraw = Event;
+
 export interface BufferOptions extends FocusManagerOptions {
   /** Associated canvas element where the buffer will be rendered */
   canvas: HTMLCanvasElement;
@@ -16,9 +40,15 @@ export interface BufferOptions extends FocusManagerOptions {
   clearStyle: Tile;
   /** Number of tiles from the borders to leave empty (not for the children) */
   padding?: Padding;
+  /** Milliseconds to pass before a tile decays (or `0` to disable the effect) */
+  decayTime?: number;
 }
 
 export interface BufferRenderStats {
+  /** Time when the render started */
+  startTime: DOMHighResTimeStamp;
+  /** Time when the render finished */
+  endTime: DOMHighResTimeStamp;
   /** Milliseconds the render needed */
   duration: number;
   /** Number of tiles rendered */
@@ -32,6 +62,10 @@ interface Cell {
   y: number;
   /** Contents of the cell */
   tile: Required<Tile>;
+  /** Contents of the decaying cell */
+  decayTile?: Required<Tile>;
+  /** Opacity of the decaying cell */
+  decayAlpha?: number;
 }
 
 /**
@@ -66,6 +100,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
       fg: '#cccccc',
       bg: '#000000',
     },
+    decayTime: 0,
   };
 
   /** Width of the tile, in pixels */
@@ -85,7 +120,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
   protected readonly viewports: Viewport[] = [];
 
   /** List of cells needed to be re-rendered */
-  private dirtyCells: Cell[] = [];
+  private readonly dirtyCells: Cell[] = [];
   /** Canvas element where to render the buffer contents */
   private readonly canvas: HTMLCanvasElement;
   /** Context of the canvas element usde for rendering */
@@ -94,9 +129,20 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
   private readonly padding: Required<Padding>;
   /** Stats about the last render */
   private readonly lastRenderStats: BufferRenderStats = {
+    startTime: 0,
+    endTime: 0,
     duration: 0,
     tiles: 0,
   };
+  /** Ms that takes a tile to decay (`0` to disable decaying) */
+  private readonly decayTime: number;
+  /** Time when the last decay render was done to calculate the decay change */
+  private lastDecayRenderTime: DOMHighResTimeStamp = 0;
+  /**
+   * Handled returned by `requestAnimationFrame`. It needs to be cancelled
+   * when calling `render` manually so the draw calls are not duplicated
+   */
+  private requestAnimationHandler?: number;
 
   constructor(options: Partial<BufferOptions> & Pick<BufferOptions, 'canvas'>) {
     super({
@@ -107,6 +153,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
       tileHeight: options.tileHeight || Buffer.defaultOptions.tileHeight,
     });
 
+    this.renderCanvas = this.renderCanvas.bind(this);
     const opt = extendObjectsOnly(
       {},
       Buffer.defaultOptions,
@@ -132,6 +179,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
       ...options.padding,
     };
     this.resize(opt.cols, opt.rows);
+    this.decayTime = opt.decayTime!;
   }
 
   /**
@@ -233,35 +281,23 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
   }
 
   /**
-   * Render the changes into the canvas
+   * Update the buffer contents from the children, and then
+   * render the changes into the canvas
    */
   public render(): void {
     this.emit('prerender');
-    const startTime = performance.now();
+    const { lastRenderStats } = this;
+    lastRenderStats.startTime = performance.now();
+    this.lastDecayRenderTime = this.lastRenderStats.startTime;
 
-    const { ctx, tileW, tileH } = this;
+    cancelAnimationFrame(this.requestAnimationHandler as number);
     this.renderChildren((this as unknown) as FriendElement);
+    lastRenderStats.tiles = this.dirtyCells.length;
+    this.renderCanvas(this.lastDecayRenderTime);
 
-    ctx.textBaseline = 'bottom';
-    for (const cell of this.dirtyCells) {
-      const { x, y, tile } = cell;
-
-      if (tile.bg) {
-        ctx.fillStyle = tile.bg;
-        ctx.fillRect(x, y, tileW, tileH);
-      }
-
-      if (tile.char) {
-        ctx.font = tile.font;
-        ctx.fillStyle = tile.fg;
-        ctx.fillText(tile.char, x + tile.offsetX, y + tileH + tile.offsetY);
-      }
-    }
-
-    this.lastRenderStats.tiles = this.dirtyCells.length;
-    this.dirtyCells = [];
-
-    this.lastRenderStats.duration = performance.now() - startTime;
+    lastRenderStats.endTime = performance.now();
+    lastRenderStats.duration =
+      lastRenderStats.endTime - lastRenderStats.startTime;
     this.emit('render');
   }
 
@@ -370,9 +406,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
     for (let y = yStart; y <= yEnd; y++) {
       const row = matrix[y];
       for (let x = xStart; x <= xEnd; x++) {
-        // Object.assign is ok because clearStyle has no `undefined` members
-        Object.assign(row[x].tile, this.clearStyle);
-        this.dirtyCells.push(row[x]);
+        this.assignCellContents(row[x], this.clearStyle, true);
       }
     }
   }
@@ -398,7 +432,11 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
    * - Only do it when changing
    * - Avoiding adding duplicated dirty tiles
    */
-  protected assignCellContents(cell: Cell, tile: Tile): void {
+  protected assignCellContents(
+    cell: Cell,
+    tile: Tile,
+    noCheck?: boolean
+  ): void {
     const oldTile = cell.tile;
     // comparison done manually because if done with Object.keys + loop is
     // slower than not applying the performance improvement
@@ -406,6 +444,7 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
     // it doesn't become a huge improvement
     // TODO: Test with bigger/real data
     if (
+      !noCheck &&
       !(
         (tile.char !== undefined && tile.char !== oldTile.char) ||
         (tile.font !== undefined && tile.font !== oldTile.font) ||
@@ -418,8 +457,18 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
       return;
     }
 
+    let decayAdded = false;
+    if (this.decayTime > 0 && oldTile.char && oldTile.char !== tile.char) {
+      cell.decayTile = { ...cell.tile };
+      cell.decayAlpha = 1;
+      if (!this.dirtyCells.includes(cell)) {
+        this.dirtyCells.push(cell);
+        decayAdded = true;
+      }
+    }
+
     Buffer.assignTile(cell.tile, tile);
-    if (!this.dirtyCells.includes(cell)) {
+    if (!decayAdded && !this.dirtyCells.includes(cell)) {
       this.dirtyCells.push(cell);
     }
   }
@@ -458,6 +507,67 @@ export class Buffer<C extends Element = Element> extends FocusManager<C> {
         this.renderChildren(elem);
         this.popViewport();
       }
+    }
+  }
+
+  /**
+   * Actually render the needed tiles (dirty ones) to the canvas
+   */
+  private renderCanvas(startTime: DOMHighResTimeStamp): void {
+    this.emit('predraw');
+
+    const { ctx, tileW, tileH, decayTime } = this;
+    const originalAlpha = ctx.globalAlpha;
+    const decayChange =
+      decayTime > 0 &&
+      Math.max(0, (startTime - this.lastDecayRenderTime) / decayTime);
+
+    ctx.textBaseline = 'bottom';
+    let renderNextDecay = false;
+
+    for (let i = this.dirtyCells.length - 1; i >= 0; i--) {
+      const cell = this.dirtyCells[i];
+      const { x, y, tile, decayTile } = cell;
+
+      // bg
+      ctx.fillStyle = tile.bg;
+      ctx.fillRect(x, y, tileW, tileH);
+
+      // decay
+      if (decayTile) {
+        renderNextDecay = true;
+        ctx.globalAlpha = cell.decayAlpha!;
+        ctx.font = decayTile.font;
+        ctx.fillStyle = decayTile.fg;
+        ctx.fillText(
+          decayTile.char,
+          x + decayTile.offsetX,
+          y + tileH + decayTile.offsetY
+        );
+        cell.decayAlpha! -= decayChange as number;
+        if (cell.decayAlpha! <= 0) {
+          cell.decayTile = undefined;
+        }
+        ctx.globalAlpha = originalAlpha;
+      }
+
+      // fg
+      if (tile.char) {
+        ctx.font = tile.font;
+        ctx.fillStyle = tile.fg;
+        ctx.fillText(tile.char, x + tile.offsetX, y + tileH + tile.offsetY);
+      }
+
+      if (!decayTile || cell.decayAlpha! <= 0) {
+        this.dirtyCells.splice(i, 1);
+      }
+    }
+
+    this.emit('draw');
+
+    if (renderNextDecay) {
+      this.lastDecayRenderTime = startTime;
+      this.requestAnimationHandler = requestAnimationFrame(this.renderCanvas);
     }
   }
 }
