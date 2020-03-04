@@ -50,7 +50,8 @@ const DEFAULT_STYLE: Tile = {
 
 /**
  * Given a text, format it into an (optional) box applying styles
- * The box will be completelly filled even if the there's no text
+ * The box will be completelly filled even if the there's no text,
+ * only if the hAlign is not `left` or the vAlign is not `top`
  */
 export function parseText(text: string, options?: ParseTextOptions): Tile[][] {
   const opt = {
@@ -230,6 +231,7 @@ function splitText(text: Tile[][], options: SplitTextOptions): Tile[][] {
     word = [];
   }
 
+  // TODO: If !width, there's no need to test with separators
   for (const row of text) {
     for (const tile of row) {
       // non-space: add it to the current word
@@ -266,13 +268,7 @@ function alignText(text: Tile[][], options: AlignTextOptions): Tile[][] {
     availableWidth = width;
   }
 
-  if (hAlign === 'left') {
-    for (const row of text) {
-      for (let i = row.length; i < availableWidth; i++) {
-        row.push(filler);
-      }
-    }
-  } else if (hAlign === 'center') {
+  if (hAlign === 'center') {
     for (const row of text) {
       const left = Math.floor((availableWidth - row.length) / 2);
       const right = availableWidth - row.length - left;
@@ -283,7 +279,7 @@ function alignText(text: Tile[][], options: AlignTextOptions): Tile[][] {
         row.push(filler);
       }
     }
-  } /*(hAlign === 'right')*/ else {
+  } else if (hAlign === 'right') {
     for (const row of text) {
       for (let i = row.length; i < availableWidth; i++) {
         row.unshift(filler);
@@ -298,11 +294,7 @@ function alignText(text: Tile[][], options: AlignTextOptions): Tile[][] {
     emptyLine.push(filler);
   }
 
-  if (vAlign === 'top') {
-    for (let i = text.length; i < availableWidth; i++) {
-      text.push(emptyLine);
-    }
-  } else if (vAlign === 'center') {
+  if (vAlign === 'center') {
     const top = Math.floor((height - text.length) / 2);
     const bottom = height - text.length - top;
     for (let i = 0; i < top; i++) {
