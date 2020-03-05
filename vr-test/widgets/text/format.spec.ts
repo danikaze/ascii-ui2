@@ -64,4 +64,35 @@ export const data: TestCases = [
       return { buffer };
     },
   },
+  {
+    description: 'Custom Text styles',
+    test: () => {
+      const text =
+        'Basic text line.\nThis is a new {fg:yellow}line{/fg:yellow}.\\nAnother line :)';
+      buffer.remove(widget);
+
+      widget = new Text({
+        text,
+        x: 0,
+        y: 0,
+        width: buffer.width,
+        height: buffer.height,
+        styles: {
+          fg: 'red',
+          bg: '#333',
+          filler: {
+            char: '.',
+            bg: '#933',
+          },
+        },
+      });
+
+      buffer.append(widget);
+      buffer.render();
+
+      assert.equal(widget.getText(), text);
+
+      return { buffer };
+    },
+  },
 ];

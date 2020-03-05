@@ -5,8 +5,11 @@ import {
   TextVerticalAlignment,
   parseText,
 } from '@src/util/parse-text';
-import { Widget, WidgetOptions } from '..';
+import { Widget, WidgetOptions, BasicStyles } from '..';
 import { ELLIPSIS } from '../constants';
+import { textStyles } from './constants';
+
+export type TextStyles = BasicStyles | 'filler';
 
 /**
  * How the text should behave if it doesn't fit in one line:
@@ -22,7 +25,7 @@ export type TextHorizontalOverflow = 'wrap' | 'hidden' | 'ellipsis';
  */
 export type TextVerticalOverflow = 'hidden' | 'ellipsis';
 
-export interface TextOptions extends WidgetOptions {
+export interface TextOptions extends WidgetOptions<TextStyles> {
   /** The text itself */
   text: string;
   /** Horizontal text alignment (`left` by default) */
@@ -41,10 +44,7 @@ export interface TextOptions extends WidgetOptions {
   allowEmptyScrollLines?: boolean;
 }
 
-export class Text extends Widget {
-  /** Character to be used when filling parts of the widget without text */
-  private static readonly emptyTile: Tile = { char: ' ' };
-
+export class Text extends Widget<TextStyles> {
   private text: string;
   private readonly hAlign: TextHorizontalAlignment;
   private readonly vAlign: TextVerticalAlignment;
@@ -63,7 +63,7 @@ export class Text extends Widget {
   private scrollMaxFirstRow: number = 0;
 
   constructor(options: TextOptions) {
-    super(options);
+    super(options, textStyles);
 
     this.parseText = this.parseText.bind(this);
     this.text = options.text;
@@ -186,12 +186,14 @@ export class Text extends Widget {
   }
 
   protected setContent(): void {
+    const emptyTile = this.getStyle('filler');
+
     for (let y = 0; y < this.content.length; y++) {
       const targetRow = this.content[y];
       const sourceRow = this.fullContent[y + this.scrollFirstRow];
       for (let x = 0; x < targetRow.length; x++) {
         targetRow[x] =
-          (sourceRow && sourceRow[x + this.scrollFirstCol]) || Text.emptyTile;
+          (sourceRow && sourceRow[x + this.scrollFirstCol]) || emptyTile;
       }
       if (
         this.hOverflow === 'ellipsis' &&
@@ -226,6 +228,8 @@ export class Text extends Widget {
       height: this.height,
       hAlign: this.hAlign,
       vAlign: this.vAlign,
+      defaultStyle: this.getStyle(),
+      filler: this.getStyle('filler'),
     });
 
     // pre-calculate text-dependant values
