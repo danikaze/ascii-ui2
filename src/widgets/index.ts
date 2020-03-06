@@ -46,7 +46,7 @@ export interface WidgetOptions<
 }
 
 export abstract class Widget<
-  S extends string,
+  S extends string = BasicStyles,
   C extends BasicWidget<S> = BasicWidget<S>,
   P extends BasicWidget<S> = BasicWidget<S>
 > extends Element<C, P> {
@@ -54,7 +54,7 @@ export abstract class Widget<
   /** Precalculated styles to use with `getStyle` */
   private readonly styles: Styles<S>;
 
-  constructor(options: WidgetOptions<S, C, P>, baseStyles: Styles<S>) {
+  constructor(options: WidgetOptions<S, C, P>, baseStyles?: Styles<S>) {
     super(options);
     this.styles = Widget.createStyles(baseStyles, options.styles);
     this.on('focus,blur,enable,disable', ({ target }) => {
@@ -68,10 +68,10 @@ export abstract class Widget<
    * Precalculate the nested styles so it doesn't need to be done every time they are accessed
    */
   private static createStyles<S extends string | BasicStyles>(
-    base: Styles<S>,
+    base?: Styles<S>,
     options?: Styles<S>
   ): Styles<S> {
-    const res = extendObjectsOnly({}, widgetStyles, base, options!) as Styles<
+    const res = extendObjectsOnly({}, widgetStyles, base!, options!) as Styles<
       S
     >;
     Object.keys(res).forEach(key => {
