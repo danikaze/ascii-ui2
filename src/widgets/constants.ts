@@ -7,6 +7,8 @@ export const enum Colors {
   bg = '#000',
   focused = '#fff',
   disabled = '#777',
+  ligthDim = '#999',
+  darkDim = '#333',
 }
 
 export const widgetStyles: Styles = {
