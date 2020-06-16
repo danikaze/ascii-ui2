@@ -28,6 +28,9 @@ error() {
   exit $errorCode
 }
 
+##
+# Define constants
+##
 C_YELLOW='\033[1;37m'
 C_RED='\033[1;31m'
 C_DEFAULT='\033[0m'
@@ -35,18 +38,38 @@ PWD=`pwd`
 PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"/..
 TARGET_DIR="${PROJECT_ROOT}/dist"
 TSC="${PROJECT_ROOT}/node_modules/.bin/tsc --project tsconfig.build.json"
+TSPM="${PROJECT_ROOT}/node_modules/.bin/ef-tspm -s -c tsconfig.build.json"
 PACKAGE_JSON="${PROJECT_ROOT}/package.json"
 MANIFEST_JSON="${PROJECT_ROOT}/manifest.json"
 PACKAGE_NAME=$(getJsonField "${PACKAGE_JSON}" name)
 PACKAGE_VERSION=$(getJsonField "${PACKAGE_JSON}" version)
+BUILD_ONLY=0
+
+##
+# Read arguments
+##
+while test $# -gt 0
+do
+  case "$1" in
+    --only) BUILD_ONLY=1
+      ;;
+    *) error 1 "unknown argument $1"
+      ;;
+  esac
+  shift
+done
+
+echo BUILD_ONLY $BUILD_ONLY
 
 # Execute the tests
-echo -e "* Running the tests..."
-npm run test || error 1 "running the tests"
+if [ $BUILD_ONLY -ne 1 ]; then
+  echo -e "* Running the tests..."
+  npm run test || error 2 "running the tests"
+fi
 
 # Generate built files in the `app` folder
 echo -e "* Building ${C_YELLOW}${PACKAGE_NAME}-${PACKAGE_VERSION}${C_DEFAULT}..."
-$TSC || error 2 "executing tsc"
+$TSC || error 3 "executing tsc"
 
 # Copy package.json without the "security" private field
 echo -e "* Copying ${C_YELLOW}package.json${C_DEFAULT} for publishing npm..."
@@ -56,14 +79,20 @@ cat "${PACKAGE_JSON}" | grep -v "private" > "${TARGET_DIR}/package.json" || erro
 echo -e "* Copying ${C_YELLOW}README.md${C_DEFAULT} to be included within the npm..."
 cp "${PROJECT_ROOT}/README.md" "${TARGET_DIR}/README.md" || error 4 "copying README.md"
 
+# Revert the typescript aliases in the generated code
+echo -e "* De-mapping typescript aliases..."
+$TSPM || error 4 "executing tspm"
+
 # Ask to publish the npm
-echo
-read -p "Publish npm? [y/N] " -n1 ans
-echo
-if [[ $ans =~ [yY] ]]; then
-  echo -e "* Publishing ${C_YELLOW}${PACKAGE_NAME}-${PACKAGE_VERSION}${C_DEFAULT}..."
-  cd "${TARGET_DIR}"
-  npm publish
+if [ $BUILD_ONLY -ne 1 ]; then
+  echo
+  read -p "Publish npm? [y/N] " -n1 ans
+  echo
+  if [[ $ans =~ [yY] ]]; then
+    echo -e "* Publishing ${C_YELLOW}${PACKAGE_NAME}-${PACKAGE_VERSION}${C_DEFAULT}..."
+    cd "${TARGET_DIR}"
+    npm publish
+  fi
 fi
 
 echo
